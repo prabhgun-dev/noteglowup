@@ -125,28 +125,27 @@ export default function LoginPage() {
                   <span className="ransom-hand text-candy-dark">your inbox 📬</span>
                 </h1>
                 <p className="mt-2 font-elite text-sm text-ink-soft">
-                  we sent a 6-digit code to <strong className="font-bungee text-ink">{email}</strong>.
+                  we sent a code to <strong className="font-bungee text-ink">{email}</strong>. paste it below.
                 </p>
 
                 <form onSubmit={verifyCode} className="mt-7 space-y-3">
                   <label className="block">
                     <span className="font-elite text-[11px] uppercase tracking-wider text-ink-mute">
-                      6-digit code
+                      code from email
                     </span>
                     <input
                       type="text"
                       inputMode="numeric"
-                      pattern="\d{6}"
-                      maxLength={6}
+                      maxLength={10}
                       required
                       autoFocus
                       value={code}
                       onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
-                      placeholder="123456"
-                      className="mt-1.5 w-full px-4 py-3 rounded-full bg-cream border border-ink/15 font-bungee text-2xl tracking-[0.4em] text-center focus:outline-none focus:ring-2 focus:ring-candy"
+                      placeholder="12345678"
+                      className="mt-1.5 w-full px-4 py-3 rounded-full bg-cream border border-ink/15 font-bungee text-2xl tracking-[0.3em] text-center focus:outline-none focus:ring-2 focus:ring-candy"
                     />
                   </label>
-                  <button type="submit" disabled={busy || code.length !== 6} className="btn-primary w-full text-sm disabled:opacity-60">
+                  <button type="submit" disabled={busy || code.length < 6} className="btn-primary w-full text-sm disabled:opacity-60">
                     {busy ? <Loader2 size={16} className="animate-spin" /> : <KeyRound size={16} />}
                     sign in
                   </button>

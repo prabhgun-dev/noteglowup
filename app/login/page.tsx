@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, Lock, UserPlus, LogIn } from 'lucide-react';
 import { Logo } from '@/components/Logo';
@@ -13,10 +13,7 @@ type Mode = 'signup' | 'signin';
 
 export default function LoginPage() {
   const router = useRouter();
-  const search = useSearchParams();
-  const initialMode = (search.get('mode') as Mode) === 'signin' ? 'signin' : 'signup';
-
-  const [mode, setMode] = useState<Mode>(initialMode);
+  const [mode, setMode] = useState<Mode>('signup');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');

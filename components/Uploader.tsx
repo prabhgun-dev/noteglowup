@@ -62,15 +62,15 @@ export function Uploader({ onResult }: Props) {
       <div
         {...getRootProps()}
         className={`paper-card p-10 md:p-14 text-center cursor-pointer transition-all ${
-          isDragActive ? 'ring-2 ring-coral-300 scale-[1.01]' : 'hover:shadow-lift'
+          isDragActive ? 'ring-2 ring-candy scale-[1.01]' : 'hover:shadow-lift'
         }`}
       >
         <input {...getInputProps()} />
-        <div className="mx-auto h-14 w-14 rounded-2xl bg-coral-100 text-coral-500 flex items-center justify-center mb-5">
+        <div className="mx-auto h-14 w-14 rounded-2xl bg-genz text-ink flex items-center justify-center mb-5 border border-ink/15">
           <Upload size={22} />
         </div>
         <h3 className="font-serif text-2xl md:text-3xl">
-          Drop your <span className="font-hand text-coral-400">notes</span> here
+          Drop your <span className="font-hand text-candy-dark">notes</span> here
         </h3>
         <p className="text-ink-soft mt-2 text-sm">
           Or tap to choose — up to 20 pages. JPG, PNG, HEIC.
@@ -88,7 +88,7 @@ export function Uploader({ onResult }: Props) {
         >
           <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
             {previews.map((src, i) => (
-              <div key={src} className="relative aspect-[3/4] rounded-xl overflow-hidden bg-paper-200 group">
+              <div key={src} className="relative aspect-[3/4] rounded-xl overflow-hidden bg-rose-light group">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={src} alt={`page ${i + 1}`} className="w-full h-full object-cover" />
                 <button
@@ -124,7 +124,7 @@ export function Uploader({ onResult }: Props) {
       )}
 
       {error && (
-        <div className="mt-4 rounded-xl border border-coral-200 bg-coral-50 text-coral-500 px-4 py-3 text-sm">
+        <div className="mt-4 rounded-xl border border-candy-dark/40 bg-rose-light text-ink-soft px-4 py-3 text-sm">
           {error}
         </div>
       )}

@@ -27,16 +27,16 @@ export function BeforeAfterDemo() {
               className="aspect-[4/5] overflow-hidden p-5"
               style={{
                 background:
-                  'repeating-linear-gradient(transparent 0 28px, rgba(14,14,14,0.10) 28px 29px), linear-gradient(180deg, #F5EAD3 0%, #EDDFC0 100%)',
+                  'repeating-linear-gradient(transparent 0 28px, rgba(26,18,18,0.10) 28px 29px), linear-gradient(180deg, #FFF8F1 0%, #FCE1E0 100%)',
               }}
             >
-              <div className="absolute left-9 top-3 bottom-10 w-px bg-accent-red/40" />
+              <div className="absolute left-9 top-3 bottom-10 w-px bg-candy-dark/40" />
               <div className="font-hand text-ink-soft text-xl leading-[29px] tracking-tight space-y-0 pl-3">
                 <p className="-rotate-1">photosynthesis -</p>
                 <p>plants make food using</p>
                 <p className="rotate-[0.5deg]">sunlight + H₂O + CO₂</p>
                 <p>→ glucose + O₂</p>
-                <p className="text-accent-red -rotate-1">happens in CHLOROPLAST</p>
+                <p className="text-candy-dark -rotate-1">happens in CHLOROPLAST</p>
                 <p>(green pigment = chlorophyll)</p>
                 <p>2 stages:</p>
                 <p className="pl-4 -rotate-[0.5deg]">1. light reaction</p>
@@ -94,7 +94,7 @@ export function BeforeAfterDemo() {
                 <p className="font-elite text-[10px] uppercase tracking-[0.25em] text-ink-faint mb-2">+ 32 flashcards</p>
                 <div className="flex gap-1.5">
                   {[0, 1, 2, 3, 4].map((i) => (
-                    <div key={i} className="h-8 flex-1 rounded-sm bg-paper-200 border border-ink/10" />
+                    <div key={i} className="h-8 flex-1 rounded-sm bg-rose-light border border-ink/10" />
                   ))}
                 </div>
               </div>

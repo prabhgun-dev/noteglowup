@@ -16,7 +16,7 @@ export function FinalCTA() {
             <span className="ransom-anton inline-block -rotate-1">stop</span>{' '}
             <span className="ransom-serif italic">rewriting.</span>
             <br />
-            <span className="ransom-hand text-accent-red inline-block rotate-2">start studying.</span>
+            <span className="ransom-hand text-candy-dark inline-block rotate-2">start studying.</span>
           </h2>
           <p className="mt-5 font-elite text-ink-soft max-w-md mx-auto text-sm">
             10 free conversions. no card. takes 20 seconds to know if it works for you.

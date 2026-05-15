@@ -17,7 +17,7 @@ export function ResultView({ result, onReset }: { result: ConvertResponse; onRes
         <button onClick={onReset} className="btn-ghost self-start">
           <ArrowLeft size={16} /> New conversion
         </button>
-        <div className="flex items-center gap-1 p-1 rounded-full bg-paper-200/70 border border-paper-300/60 self-start sm:self-auto">
+        <div className="flex items-center gap-1 p-1 rounded-full bg-rose/40 border border-ink/15 self-start sm:self-auto">
           <TabBtn active={tab === 'notes'} onClick={() => setTab('notes')} icon={FileText}>
             Notes
           </TabBtn>

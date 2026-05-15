@@ -7,7 +7,7 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-6 flex flex-col md:flex-row items-center justify-between gap-4">
         <Logo />
         <p className="font-elite text-xs uppercase tracking-wider text-ink-mute">
-          made in <span className="font-hand normal-case text-accent-red text-base">bharat</span> · for students who study weird hours
+          made in <span className="font-hand normal-case text-candy-dark text-base">bharat</span> · for students who study weird hours
         </p>
         <div className="flex items-center gap-4 font-elite text-[11px] uppercase tracking-wider text-ink-mute">
           <Link href="/privacy" className="hover:text-ink">privacy</Link>

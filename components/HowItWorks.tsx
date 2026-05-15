@@ -36,7 +36,7 @@ export function HowItWorks() {
           <h2 className="mt-6 text-4xl md:text-6xl tracking-tight leading-[1.05]">
             <span className="ransom-anton inline-block -rotate-1">three</span>{' '}
             <span className="ransom-serif italic">taps.</span>{' '}
-            <span className="ransom-hand text-accent-red inline-block rotate-2">no setup.</span>
+            <span className="ransom-hand text-candy-dark inline-block rotate-2">no setup.</span>
           </h2>
           <p className="mt-4 font-elite text-ink-soft text-base">
             you already know how to take a photo. that's the whole UX.

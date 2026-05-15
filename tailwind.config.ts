@@ -9,29 +9,34 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        paper: {
-          DEFAULT: '#F7F2E8',
-          50: '#FCF9F2',
-          100: '#F7F2E8',
-          200: '#EFE7D5',
-          300: '#E2D6BC',
-          400: '#C9B89A',
+        // Pantone palette
+        dogwood: {
+          DEFAULT: '#EDCDC2', // Pale Dogwood 13-1404
+          light: '#F4DDD3',
+          dark: '#D9B3A5',
         },
+        rose: {
+          DEFAULT: '#F7CAC9', // Rose Quartz 13-1520
+          light: '#FCE1E0',
+          dark: '#E8AFAE',
+        },
+        candy: {
+          DEFAULT: '#F4ACB7', // Candy Pink 14-1911 TCX
+          light: '#F9C9D2',
+          dark: '#E58A99',
+        },
+        genz: {
+          DEFAULT: '#FCD757', // Gen-Z Yellow
+          light: '#FFE89C',
+          dark: '#E8BC3A',
+        },
+        cream: '#FFF8F1',
         ink: {
-          DEFAULT: '#0E0E0E',
-          soft: '#1F1F1F',
-          mute: '#5C5C5C',
-          faint: '#9B9B9B',
+          DEFAULT: '#1A1212',
+          soft: '#2E2222',
+          mute: '#6B5A5A',
+          faint: '#B4A09F',
         },
-        tape: {
-          DEFAULT: '#F5E6C3',
-          mute: 'rgba(245, 230, 195, 0.7)',
-        },
-        accent: {
-          red: '#E03A1F',
-          dot: '#F04438',
-        },
-        cream: '#FFFBF2',
       },
       fontFamily: {
         serif: ['var(--font-fraunces)', 'ui-serif', 'Georgia', 'serif'],
@@ -45,10 +50,10 @@ const config: Config = {
         '4xl': '2rem',
       },
       boxShadow: {
-        paper: '0 1px 2px rgba(14,14,14,0.06), 0 8px 24px -12px rgba(14,14,14,0.18)',
-        lift: '0 3px 6px rgba(14,14,14,0.08), 0 24px 48px -16px rgba(14,14,14,0.25)',
-        sticker: '0 1px 0 rgba(0,0,0,0.15), 0 4px 8px -2px rgba(0,0,0,0.18)',
-        polaroid: '0 2px 4px rgba(14,14,14,0.1), 0 18px 32px -12px rgba(14,14,14,0.28)',
+        paper: '0 1px 2px rgba(26,18,18,0.06), 0 8px 24px -12px rgba(26,18,18,0.18)',
+        lift: '0 3px 6px rgba(26,18,18,0.08), 0 24px 48px -16px rgba(26,18,18,0.25)',
+        sticker: '0 1px 0 rgba(0,0,0,0.10), 0 4px 8px -2px rgba(229,138,153,0.30)',
+        polaroid: '0 2px 4px rgba(26,18,18,0.10), 0 18px 32px -12px rgba(26,18,18,0.25)',
       },
       animation: {
         'float-slow': 'float 6s ease-in-out infinite',

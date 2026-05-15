@@ -69,7 +69,7 @@ export function Flashcards({ cards: initial }: { cards: Flashcard[] }) {
             <p className="font-serif text-2xl md:text-3xl leading-snug text-balance">{card.front}</p>
           </Face>
           <Face>
-            <p className="text-xs uppercase tracking-[0.2em] text-sage-500 mb-3">answer</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-candy-dark mb-3">answer</p>
             <p className="font-serif text-xl md:text-2xl leading-snug text-balance">{card.back}</p>
           </Face>
         </motion.div>
@@ -90,10 +90,10 @@ export function Flashcards({ cards: initial }: { cards: Flashcard[] }) {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="mt-6 h-1.5 rounded-full bg-paper-200 overflow-hidden"
+            className="mt-6 h-1.5 rounded-full bg-rose-light overflow-hidden"
           >
             <motion.div
-              className="h-full bg-coral-300"
+              className="h-full bg-candy"
               animate={{ width: `${((i + 1) / cards.length) * 100}%` }}
               transition={{ duration: 0.3 }}
             />
@@ -108,7 +108,7 @@ function Face({ children, front }: { children: React.ReactNode; front?: boolean 
   return (
     <div
       className={`absolute inset-0 paper-card p-8 md:p-12 flex flex-col items-center justify-center text-center ${
-        front ? '' : 'bg-sage-50'
+        front ? '' : 'bg-rose-light'
       }`}
       style={{ backfaceVisibility: 'hidden', transform: front ? 'rotateY(0deg)' : 'rotateY(180deg)' }}
     >

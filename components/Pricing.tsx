@@ -46,7 +46,7 @@ export function Pricing() {
           <MemoryTicket />
           <h2 className="mt-4 text-4xl md:text-6xl tracking-tight leading-[1.05]">
             <span className="ransom-anton inline-block -rotate-1">less than</span>{' '}
-            <span className="ransom-hand text-accent-red inline-block rotate-2">one</span>{' '}
+            <span className="ransom-hand text-candy-dark inline-block rotate-2">one</span>{' '}
             <span className="ransom-serif italic">tuition class.</span>
           </h2>
           <p className="mt-4 font-elite text-ink-soft">pay yearly: ₹2,999 — that's 2 months free.</p>
@@ -77,7 +77,7 @@ export function Pricing() {
                 href={t.cta.href}
                 className={
                   t.accent
-                    ? 'mt-6 inline-flex items-center justify-center w-full px-6 py-3 rounded-full bg-cream text-ink font-bungee text-xs uppercase tracking-wider hover:bg-paper-100 transition-colors'
+                    ? 'mt-6 inline-flex items-center justify-center w-full px-6 py-3 rounded-full bg-cream text-ink font-bungee text-xs uppercase tracking-wider hover:bg-rose-light transition-colors'
                     : 'mt-6 btn-primary w-full'
                 }
               >

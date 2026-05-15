@@ -22,7 +22,7 @@ export function Hero() {
           transition={{ duration: 0.5 }}
           className="inline-flex items-center gap-2 sticker-label-white mb-8 rotate-[-2deg]"
         >
-          <span className="h-1.5 w-1.5 rounded-full bg-accent-dot animate-pulse" />
+          <span className="h-1.5 w-1.5 rounded-full bg-candy animate-pulse" />
           built by a 17yo who hated rewriting notes
         </motion.div>
 
@@ -33,7 +33,7 @@ export function Hero() {
           className="text-5xl md:text-8xl leading-[0.95] tracking-tight text-balance"
         >
           <span className="ransom-anton inline-block -rotate-2">YOUR</span>{' '}
-          <span className="ransom-hand text-accent-red inline-block rotate-1 italic">ugly</span>{' '}
+          <span className="ransom-hand text-candy-dark inline-block rotate-1 italic">ugly</span>{' '}
           <span className="ransom-bungee inline-block rotate-1">NOTES,</span>
           <br />
           <span className="ransom-serif italic inline-block -rotate-1">aesthetic</span>{' '}

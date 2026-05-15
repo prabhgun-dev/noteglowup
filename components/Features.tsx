@@ -12,7 +12,7 @@ const features = [
 
 export function Features() {
   return (
-    <section id="features" className="py-24 md:py-32 bg-paper-200/40 relative">
+    <section id="features" className="py-24 md:py-32 bg-rose/30 relative">
       <StarSticker className="absolute top-16 left-12 -rotate-12 hidden md:block" size={28} />
       <StarBlack className="absolute bottom-20 right-16 rotate-12 hidden md:block" size={22} />
 
@@ -22,7 +22,7 @@ export function Features() {
           <h2 className="mt-4 text-4xl md:text-6xl tracking-tight leading-[1.05]">
             <span className="ransom-anton inline-block -rotate-1">built for</span>{' '}
             <span className="ransom-serif italic">students,</span>{' '}
-            <span className="ransom-hand text-accent-red rotate-2 inline-block">not PMs.</span>
+            <span className="ransom-hand text-candy-dark rotate-2 inline-block">not PMs.</span>
           </h2>
         </div>
 

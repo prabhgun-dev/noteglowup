@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import sharp from 'sharp';
 import { z } from 'zod';
 import { getAnthropic, CONVERSION_SYSTEM_PROMPT } from '@/lib/anthropic';
+import { createClient } from '@/lib/supabase/server';
+import { getQuota } from '@/lib/quota';
 import type { ConvertResponse } from '@/lib/types';
 
 export const runtime = 'nodejs';
@@ -29,6 +31,26 @@ async function fileToResizedBase64(file: File) {
 
 export async function POST(req: Request) {
   try {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'Please sign in to convert notes' }, { status: 401 });
+    }
+
+    const quota = await getQuota(user.id);
+    if (quota.plan === 'free' && quota.remaining !== null && quota.remaining <= 0) {
+      return NextResponse.json(
+        {
+          error: 'free_limit_reached',
+          message: `You've used all ${quota.limit} free conversions this month. Upgrade for unlimited.`,
+        },
+        { status: 402 },
+      );
+    }
+
     const form = await req.formData();
     const files = form.getAll('images').filter((f): f is File => f instanceof File);
 
@@ -101,6 +123,16 @@ export async function POST(req: Request) {
     }
 
     const result: ConvertResponse = validated.data;
+
+    // Save to history (best-effort; don't fail the request if this fails)
+    await supabase.from('conversions').insert({
+      user_id: user.id,
+      title: result.title,
+      subject: result.subject,
+      notes_markdown: result.notesMarkdown,
+      flashcards: result.flashcards,
+    });
+
     return NextResponse.json(result);
   } catch (err) {
     console.error('[convert] error', err);

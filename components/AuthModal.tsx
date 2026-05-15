@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, Lock, X, UserPlus, LogIn } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { StarSticker, HeartBubble } from './Stickers';
+import { PasswordInput } from './PasswordInput';
 
 type Mode = 'signup' | 'signin';
 
@@ -152,23 +153,17 @@ export function AuthModal({
                     placeholder="you@school.in"
                     className="w-full px-4 py-3 rounded-full bg-cream border border-ink/15 font-sans text-sm focus:outline-none focus:ring-2 focus:ring-candy"
                   />
-                  <input
-                    type="password"
-                    required
-                    minLength={6}
+                  <PasswordInput
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={setPassword}
                     placeholder="password (6+ chars)"
-                    className="w-full px-4 py-3 rounded-full bg-cream border border-ink/15 font-sans text-sm focus:outline-none focus:ring-2 focus:ring-candy"
+                    minLength={6}
                   />
                   {mode === 'signup' && (
-                    <input
-                      type="password"
-                      required
+                    <PasswordInput
                       value={confirm}
-                      onChange={(e) => setConfirm(e.target.value)}
+                      onChange={setConfirm}
                       placeholder="confirm password"
-                      className="w-full px-4 py-3 rounded-full bg-cream border border-ink/15 font-sans text-sm focus:outline-none focus:ring-2 focus:ring-candy"
                     />
                   )}
                   <button type="submit" disabled={busy} className="btn-primary w-full text-sm disabled:opacity-60">

@@ -114,3 +114,25 @@
   .text-balance { text-wrap: balance; }
   .text-pretty { text-wrap: pretty; }
 }
+
+@media print {
+  body {
+    background: white !important;
+    background-image: none !important;
+  }
+  .no-print { display: none !important; }
+  header, footer { display: none !important; }
+  .print-area .paper-card {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+  .print-area {
+    margin: 0;
+    padding: 0;
+  }
+  @page {
+    margin: 18mm 16mm;
+    size: A4;
+  }
+}

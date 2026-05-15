@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { FileText, Layers, Download, ArrowLeft } from 'lucide-react';
+import { FileText, Layers, ArrowLeft } from 'lucide-react';
 import type { ConvertResponse } from '@/lib/types';
 import { NotesView } from './NotesView';
 import { Flashcards } from './Flashcards';
+import { ExportMenu } from './ExportMenu';
 
 type Tab = 'notes' | 'cards';
 
@@ -13,7 +14,7 @@ export function ResultView({ result, onReset }: { result: ConvertResponse; onRes
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6 no-print">
         <button onClick={onReset} className="btn-ghost self-start">
           <ArrowLeft size={16} /> New conversion
         </button>
@@ -25,16 +26,16 @@ export function ResultView({ result, onReset }: { result: ConvertResponse; onRes
             {result.flashcards.length} cards
           </TabBtn>
         </div>
-        <button className="btn-ghost self-start sm:self-auto" disabled title="Coming soon">
-          <Download size={16} /> Export
-        </button>
+        <ExportMenu result={result} />
       </div>
 
-      {tab === 'notes' ? (
-        <NotesView markdown={result.notesMarkdown} title={result.title} subject={result.subject} />
-      ) : (
-        <Flashcards cards={result.flashcards} />
-      )}
+      <div className="print-area">
+        {tab === 'notes' ? (
+          <NotesView markdown={result.notesMarkdown} title={result.title} subject={result.subject} />
+        ) : (
+          <Flashcards cards={result.flashcards} />
+        )}
+      </div>
     </div>
   );
 }

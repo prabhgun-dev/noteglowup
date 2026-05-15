@@ -8,57 +8,81 @@
   }
   body {
     @apply bg-paper text-ink font-sans antialiased;
+    background-color: #F7F2E8;
     background-image:
-      radial-gradient(circle at 20% 0%, rgba(189, 205, 177, 0.25), transparent 50%),
-      radial-gradient(circle at 100% 30%, rgba(230, 148, 120, 0.18), transparent 45%),
-      radial-gradient(circle at 50% 100%, rgba(247, 232, 209, 0.55), transparent 60%);
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.10 0 0 0 0 0.08 0 0 0 0 0.06 0 0 0 0.08 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
     background-attachment: fixed;
   }
   ::selection {
-    @apply bg-coral-200 text-ink;
-  }
-  h1, h2, h3, h4 {
-    @apply font-serif tracking-tight text-ink;
+    @apply bg-ink text-cream;
   }
 }
 
 @layer components {
-  .grain::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: inherit;
-    opacity: 0.4;
-    pointer-events: none;
-    mix-blend-mode: multiply;
+  .paper-card {
+    @apply relative bg-cream rounded-2xl shadow-paper border border-ink/10;
   }
 
-  .paper-card {
-    @apply relative bg-cream rounded-3xl shadow-paper border border-paper-200/60;
+  .polaroid {
+    @apply relative bg-cream p-3 pb-10 shadow-polaroid border border-ink/10;
   }
 
   .pill {
-    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border border-paper-300/70 bg-paper-50 text-ink-soft;
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] uppercase tracking-[0.18em] font-elite border border-ink/15 bg-cream text-ink-soft;
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-ink text-cream font-medium text-sm shadow-lift hover:shadow-paper transition-all hover:-translate-y-0.5 active:translate-y-0;
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-ink text-cream font-bungee text-[13px] tracking-wide uppercase shadow-sticker hover:shadow-lift transition-all hover:-translate-y-0.5 active:translate-y-0;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-ink-soft font-medium text-sm hover:bg-paper-200/60 transition-colors;
+    @apply inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-ink-soft font-elite text-sm hover:bg-paper-200 transition-colors;
   }
 
+  /* Sticker label: solid black pill with white text — like the OOTD/cutie labels */
+  .sticker-label {
+    @apply inline-block px-2.5 py-1 bg-ink text-cream text-[11px] font-bungee uppercase tracking-wider rounded-md shadow-sticker;
+  }
+
+  .sticker-label-white {
+    @apply inline-block px-2.5 py-1 bg-cream text-ink text-[11px] font-bungee uppercase tracking-wider rounded-md border border-ink/20 shadow-sticker;
+  }
+
+  /* Tape pieces */
+  .tape {
+    @apply absolute bg-tape/80 backdrop-blur-sm shadow-sm;
+    width: 80px;
+    height: 22px;
+    border-radius: 1px;
+  }
+  .tape::before, .tape::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 4px;
+    background: rgba(0,0,0,0.04);
+  }
+  .tape::before { left: 0; }
+  .tape::after { right: 0; }
+
+  /* Ransom-note text helper: applied to per-word spans */
+  .ransom-serif { font-family: var(--font-fraunces); font-weight: 600; }
+  .ransom-bungee { font-family: var(--font-bungee); }
+  .ransom-anton { font-family: var(--font-anton); letter-spacing: -0.01em; }
+  .ransom-elite { font-family: var(--font-elite); }
+  .ransom-hand { font-family: var(--font-caveat); font-weight: 700; }
+
+  /* Marker highlight */
   .highlight {
-    background-image: linear-gradient(120deg, rgba(247, 217, 206, 0.7) 0%, rgba(247, 217, 206, 0.7) 100%);
+    background-image: linear-gradient(120deg, rgba(245, 230, 195, 0.9) 0%, rgba(245, 230, 195, 0.9) 100%);
     background-repeat: no-repeat;
     background-size: 100% 38%;
-    background-position: 0 85%;
-    padding: 0 0.15em;
+    background-position: 0 80%;
+    padding: 0 0.12em;
   }
 
   .underline-hand {
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 8'><path d='M2 5 Q 50 1, 100 4 T 198 5' stroke='%23E69478' stroke-width='2.5' fill='none' stroke-linecap='round'/></svg>");
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 8'><path d='M2 5 Q 50 1, 100 4 T 198 5' stroke='%230E0E0E' stroke-width='3' fill='none' stroke-linecap='round'/></svg>");
     background-repeat: no-repeat;
     background-position: 0 100%;
     background-size: 100% 0.4em;
@@ -67,10 +91,12 @@
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-  .text-pretty {
-    text-wrap: pretty;
-  }
+  .text-balance { text-wrap: balance; }
+  .text-pretty { text-wrap: pretty; }
+  .rotate-neg1 { transform: rotate(-1deg); }
+  .rotate-neg2 { transform: rotate(-2deg); }
+  .rotate-neg3 { transform: rotate(-3deg); }
+  .rotate-1deg { transform: rotate(1deg); }
+  .rotate-2deg { transform: rotate(2deg); }
+  .rotate-3deg { transform: rotate(3deg); }
 }

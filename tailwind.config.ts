@@ -10,34 +10,26 @@ const config: Config = {
     extend: {
       colors: {
         paper: {
-          DEFAULT: '#FAF6EE',
-          50: '#FDFBF6',
-          100: '#FAF6EE',
-          200: '#F2EBDC',
-          300: '#E8DFC9',
+          DEFAULT: '#F7F2E8',
+          50: '#FCF9F2',
+          100: '#F7F2E8',
+          200: '#EFE7D5',
+          300: '#E2D6BC',
+          400: '#C9B89A',
         },
         ink: {
-          DEFAULT: '#1F1B16',
-          soft: '#3A332B',
-          mute: '#6B6258',
-          faint: '#A89E92',
+          DEFAULT: '#0E0E0E',
+          soft: '#1F1F1F',
+          mute: '#5C5C5C',
+          faint: '#9B9B9B',
         },
-        sage: {
-          50: '#F1F4EE',
-          100: '#DDE5D4',
-          200: '#BFCDB1',
-          300: '#9DB28A',
-          400: '#7E9669',
-          500: '#637A50',
-          600: '#4D6040',
+        tape: {
+          DEFAULT: '#F5E6C3',
+          mute: 'rgba(245, 230, 195, 0.7)',
         },
-        coral: {
-          50: '#FBEFEA',
-          100: '#F6D9CE',
-          200: '#EFB9A6',
-          300: '#E69478',
-          400: '#D87253',
-          500: '#C25737',
+        accent: {
+          red: '#E03A1F',
+          dot: '#F04438',
         },
         cream: '#FFFBF2',
       },
@@ -45,20 +37,23 @@ const config: Config = {
         serif: ['var(--font-fraunces)', 'ui-serif', 'Georgia', 'serif'],
         sans: ['var(--font-inter)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         hand: ['var(--font-caveat)', 'cursive'],
+        bungee: ['var(--font-bungee)', 'Impact', 'sans-serif'],
+        anton: ['var(--font-anton)', 'Impact', 'sans-serif'],
+        elite: ['var(--font-elite)', 'Courier New', 'monospace'],
       },
       borderRadius: {
         '4xl': '2rem',
       },
       boxShadow: {
-        paper: '0 1px 2px rgba(31,27,22,0.04), 0 8px 24px -12px rgba(31,27,22,0.12)',
-        lift: '0 2px 4px rgba(31,27,22,0.06), 0 24px 48px -16px rgba(31,27,22,0.18)',
-      },
-      backgroundImage: {
-        grain: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.12 0 0 0 0 0.10 0 0 0 0 0.08 0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")",
+        paper: '0 1px 2px rgba(14,14,14,0.06), 0 8px 24px -12px rgba(14,14,14,0.18)',
+        lift: '0 3px 6px rgba(14,14,14,0.08), 0 24px 48px -16px rgba(14,14,14,0.25)',
+        sticker: '0 1px 0 rgba(0,0,0,0.15), 0 4px 8px -2px rgba(0,0,0,0.18)',
+        polaroid: '0 2px 4px rgba(14,14,14,0.1), 0 18px 32px -12px rgba(14,14,14,0.28)',
       },
       animation: {
         'float-slow': 'float 6s ease-in-out infinite',
         'fade-up': 'fadeUp 0.6s ease-out forwards',
+        'wiggle': 'wiggle 4s ease-in-out infinite',
       },
       keyframes: {
         float: {
@@ -68,6 +63,10 @@ const config: Config = {
         fadeUp: {
           '0%': { opacity: '0', transform: 'translateY(12px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        wiggle: {
+          '0%, 100%': { transform: 'rotate(-1deg)' },
+          '50%': { transform: 'rotate(1.5deg)' },
         },
       },
     },

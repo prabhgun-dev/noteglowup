@@ -1,57 +1,39 @@
 import { FileText, Brain, Download, Smartphone, Palette, Zap } from 'lucide-react';
+import { StarSticker, StarBlack, MemoryTicket } from './Stickers';
 
 const features = [
-  {
-    icon: Brain,
-    title: 'Handwriting that actually works',
-    body: 'Even messy. Even cursive. Even Hinglish. Powered by Claude vision.',
-  },
-  {
-    icon: FileText,
-    title: 'Notes + flashcards in one shot',
-    body: 'Most tools do one. We do both, from the same upload, in the same 20 seconds.',
-  },
-  {
-    icon: Download,
-    title: 'Export to anything',
-    body: 'Anki .apkg, Quizlet CSV, aesthetic PDF. Your notes, your platform.',
-  },
-  {
-    icon: Smartphone,
-    title: 'Phone-first',
-    body: 'Built to be used between classes. No app to install. Works on any phone.',
-  },
-  {
-    icon: Palette,
-    title: 'Looks like Pinterest, not Word',
-    body: 'Soft palettes, real typography, no Comic Sans. Your notes deserve better.',
-  },
-  {
-    icon: Zap,
-    title: '20 seconds, end to end',
-    body: 'Upload → notes → flashcards. Faster than rewriting one page by hand.',
-  },
+  { icon: Brain, title: 'handwriting that works', body: 'even messy. even cursive. even Hinglish.', rotate: '-rotate-1' },
+  { icon: FileText, title: 'notes + cards in one shot', body: 'most tools do one. we do both, same upload, same 20 sec.', rotate: 'rotate-1' },
+  { icon: Download, title: 'export to anything', body: 'Anki .apkg, Quizlet CSV, aesthetic PDF. your notes, your platform.', rotate: '-rotate-2' },
+  { icon: Smartphone, title: 'phone-first', body: 'built to use between classes. no app to install.', rotate: 'rotate-2' },
+  { icon: Palette, title: 'looks like Pinterest, not Word', body: 'real typography. no Comic Sans. your notes deserve better.', rotate: '-rotate-1' },
+  { icon: Zap, title: '20 sec end-to-end', body: 'upload → notes → flashcards. faster than rewriting one page.', rotate: 'rotate-1' },
 ];
 
 export function Features() {
   return (
-    <section id="features" className="py-24 md:py-32 bg-paper-100/60">
+    <section id="features" className="py-24 md:py-32 bg-paper-200/40 relative">
+      <StarSticker className="absolute top-16 left-12 -rotate-12 hidden md:block" size={28} />
+      <StarBlack className="absolute bottom-20 right-16 rotate-12 hidden md:block" size={22} />
+
       <div className="mx-auto max-w-6xl px-6">
         <div className="text-center max-w-2xl mx-auto">
-          <span className="pill">features</span>
-          <h2 className="mt-4 font-serif text-4xl md:text-5xl tracking-tight leading-[1.1]">
-            Built for students, not <span className="font-hand text-coral-400 italic">PMs.</span>
+          <MemoryTicket />
+          <h2 className="mt-4 text-4xl md:text-6xl tracking-tight leading-[1.05]">
+            <span className="ransom-anton inline-block -rotate-1">built for</span>{' '}
+            <span className="ransom-serif italic">students,</span>{' '}
+            <span className="ransom-hand text-accent-red rotate-2 inline-block">not PMs.</span>
           </h2>
         </div>
 
-        <div className="mt-14 grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {features.map(({ icon: Icon, title, body }) => (
-            <div key={title} className="paper-card p-6 hover:-translate-y-1 transition-transform">
-              <div className="h-10 w-10 rounded-xl bg-coral-100 text-coral-500 flex items-center justify-center mb-4">
+        <div className="mt-16 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {features.map(({ icon: Icon, title, body, rotate }) => (
+            <div key={title} className={`paper-card p-6 ${rotate} hover:rotate-0 hover:-translate-y-1 transition-all`}>
+              <div className="h-10 w-10 rounded-md bg-ink text-cream flex items-center justify-center mb-4 shadow-sticker">
                 <Icon size={18} />
               </div>
-              <h3 className="font-serif text-lg mb-1.5">{title}</h3>
-              <p className="text-sm text-ink-soft leading-relaxed">{body}</p>
+              <h3 className="font-bungee text-base uppercase mb-1.5 tracking-wide">{title}</h3>
+              <p className="font-sans text-sm text-ink-soft leading-relaxed">{body}</p>
             </div>
           ))}
         </div>

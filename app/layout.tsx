@@ -1,11 +1,10 @@
 import type { Metadata } from 'next';
-import { Fraunces, Inter, Caveat } from 'next/font/google';
+import { Fraunces, Inter, Caveat, Bungee, Anton, Special_Elite } from 'next/font/google';
 import './globals.css';
 
 const fraunces = Fraunces({
   subsets: ['latin'],
   variable: '--font-fraunces',
-  axes: ['SOFT', 'opsz'],
   display: 'swap',
 });
 
@@ -21,8 +20,29 @@ const caveat = Caveat({
   display: 'swap',
 });
 
+const bungee = Bungee({
+  subsets: ['latin'],
+  weight: '400',
+  variable: '--font-bungee',
+  display: 'swap',
+});
+
+const anton = Anton({
+  subsets: ['latin'],
+  weight: '400',
+  variable: '--font-anton',
+  display: 'swap',
+});
+
+const specialElite = Special_Elite({
+  subsets: ['latin'],
+  weight: '400',
+  variable: '--font-elite',
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
-  title: 'Notesly — Ugly notes, aesthetic in 20 seconds',
+  title: 'Notesly — ugly notes → aesthetic in 20 seconds',
   description:
     'Snap a photo of your notebook. Get clean digital notes + 30 flashcards instantly. Built for JEE, NEET, and Class 11–12 students.',
   openGraph: {
@@ -34,7 +54,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${inter.variable} ${caveat.variable}`}>
+    <html
+      lang="en"
+      className={`${fraunces.variable} ${inter.variable} ${caveat.variable} ${bungee.variable} ${anton.variable} ${specialElite.variable}`}
+    >
       <body>{children}</body>
     </html>
   );

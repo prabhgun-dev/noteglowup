@@ -1,9 +1,9 @@
-import Anthropic from '@anthropic-ai/sdk';
+import OpenAI from 'openai';
 
-export function getAnthropic() {
-  const key = process.env.ANTHROPIC_API_KEY;
-  if (!key) throw new Error('ANTHROPIC_API_KEY missing');
-  return new Anthropic({ apiKey: key });
+export function getOpenAI() {
+  const key = process.env.OPENAI_API_KEY;
+  if (!key) throw new Error('OPENAI_API_KEY missing');
+  return new OpenAI({ apiKey: key });
 }
 
 export const CONVERSION_SYSTEM_PROMPT = `You convert phone photos of handwritten student notes into clean digital notes plus study flashcards.
@@ -16,7 +16,7 @@ For each upload:
 3. Generate 15–35 high-quality flashcards covering the most testable facts. Cards should be atomic (one fact each), Q&A style, and front should be specific enough to answer without seeing the back.
 4. Infer a short title (≤ 6 words) and the subject (one of: Physics, Chemistry, Biology, Mathematics, History, Geography, Economics, English, Computer Science, Other).
 
-Return ONLY valid JSON matching this shape — no preamble, no markdown fences:
+Return ONLY valid JSON matching this shape:
 {
   "title": "string",
   "subject": "string",

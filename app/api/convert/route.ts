@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import sharp from 'sharp';
 import { z } from 'zod';
-import { getAnthropic, CONVERSION_SYSTEM_PROMPT } from '@/lib/anthropic';
+import { getOpenAI, CONVERSION_SYSTEM_PROMPT } from '@/lib/llm';
 import { createClient } from '@/lib/supabase/server';
 import { getQuota } from '@/lib/quota';
 import type { ConvertResponse } from '@/lib/types';
@@ -61,33 +61,27 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Max 20 pages per upload' }, { status: 400 });
     }
 
-    const imageParts = await Promise.all(
+    const imageMessages = await Promise.all(
       files.map(async (file) => ({
-        type: 'image' as const,
-        source: {
-          type: 'base64' as const,
-          media_type: 'image/jpeg' as const,
-          data: await fileToResizedBase64(file),
+        type: 'image_url' as const,
+        image_url: {
+          url: `data:image/jpeg;base64,${await fileToResizedBase64(file)}`,
+          detail: 'high' as const,
         },
       })),
     );
 
-    const anthropic = getAnthropic();
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+    const openai = getOpenAI();
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o',
       max_tokens: 4096,
-      system: [
-        {
-          type: 'text',
-          text: CONVERSION_SYSTEM_PROMPT,
-          cache_control: { type: 'ephemeral' },
-        },
-      ],
+      response_format: { type: 'json_object' },
       messages: [
+        { role: 'system', content: CONVERSION_SYSTEM_PROMPT },
         {
           role: 'user',
           content: [
-            ...imageParts,
+            ...imageMessages,
             {
               type: 'text',
               text: 'Convert these notebook pages. Return only the JSON object specified.',
@@ -97,14 +91,9 @@ export async function POST(req: Request) {
       ],
     });
 
-    const textBlock = message.content.find((b) => b.type === 'text');
-    if (!textBlock || textBlock.type !== 'text') {
+    const raw = completion.choices[0]?.message?.content;
+    if (!raw) {
       return NextResponse.json({ error: 'Model returned no text' }, { status: 502 });
-    }
-
-    let raw = textBlock.text.trim();
-    if (raw.startsWith('```')) {
-      raw = raw.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
     }
 
     let parsed: unknown;
@@ -124,7 +113,6 @@ export async function POST(req: Request) {
 
     const result: ConvertResponse = validated.data;
 
-    // Save to history (best-effort; don't fail the request if this fails)
     await supabase.from('conversions').insert({
       user_id: user.id,
       title: result.title,

@@ -2,51 +2,49 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, ArrowRight, Loader2, KeyRound, Lock } from 'lucide-react';
+import { Loader2, Lock, UserPlus, LogIn } from 'lucide-react';
 import { Logo } from '@/components/Logo';
 import { StarSticker, StarBlack, HeartBubble } from '@/components/Stickers';
 import { createClient } from '@/lib/supabase/client';
 
-type Stage = 'email' | 'code' | 'password';
+type Mode = 'signup' | 'signin';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [stage, setStage] = useState<Stage>('email');
+  const search = useSearchParams();
+  const initialMode = (search.get('mode') as Mode) === 'signin' ? 'signin' : 'signup';
+
+  const [mode, setMode] = useState<Mode>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [code, setCode] = useState('');
+  const [confirm, setConfirm] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function sendCode(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setBusy(true);
     setError(null);
-    const supabase = createClient();
-    const { error: err } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
-    });
-    setBusy(false);
-    if (err) {
-      setError(err.message);
-      return;
-    }
-    setStage('code');
-  }
 
-  async function verifyCode(e: React.FormEvent) {
-    e.preventDefault();
+    if (mode === 'signup') {
+      if (password.length < 6) {
+        setError('password must be at least 6 characters');
+        return;
+      }
+      if (password !== confirm) {
+        setError("passwords don't match");
+        return;
+      }
+    }
+
     setBusy(true);
-    setError(null);
     const supabase = createClient();
-    const { error: err } = await supabase.auth.verifyOtp({
-      email,
-      token: code.trim(),
-      type: 'email',
-    });
+    const { error: err } =
+      mode === 'signup'
+        ? await supabase.auth.signUp({ email, password })
+        : await supabase.auth.signInWithPassword({ email, password });
+
     if (err) {
       setBusy(false);
       setError(err.message);
@@ -56,19 +54,10 @@ export default function LoginPage() {
     router.refresh();
   }
 
-  async function signInWithPassword(e: React.FormEvent) {
-    e.preventDefault();
-    setBusy(true);
+  function switchMode(next: Mode) {
+    setMode(next);
     setError(null);
-    const supabase = createClient();
-    const { error: err } = await supabase.auth.signInWithPassword({ email, password });
-    if (err) {
-      setBusy(false);
-      setError(err.message);
-      return;
-    }
-    router.push('/app');
-    router.refresh();
+    setConfirm('');
   }
 
   return (
@@ -89,125 +78,78 @@ export default function LoginPage() {
           animate={{ opacity: 1, y: 0 }}
           className="paper-card w-full max-w-md p-8 md:p-10 -rotate-1"
         >
+          <div className="flex items-center gap-1 p-1 rounded-full bg-rose/40 border border-ink/15 mb-7">
+            <TabBtn active={mode === 'signup'} onClick={() => switchMode('signup')}>
+              <UserPlus size={14} /> create account
+            </TabBtn>
+            <TabBtn active={mode === 'signin'} onClick={() => switchMode('signin')}>
+              <LogIn size={14} /> sign in
+            </TabBtn>
+          </div>
+
           <AnimatePresence mode="wait">
-            {stage === 'email' && (
-              <motion.div key="email" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                <h1 className="text-3xl md:text-4xl tracking-tight leading-[1.1]">
-                  <span className="ransom-anton">welcome</span>{' '}
-                  <span className="ransom-hand text-candy-dark">back ✨</span>
-                </h1>
-                <p className="mt-2 font-elite text-sm text-ink-soft">
-                  enter your email — we&apos;ll send a code.
-                </p>
+            <motion.div
+              key={mode}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+            >
+              <h1 className="text-3xl md:text-4xl tracking-tight leading-[1.1]">
+                {mode === 'signup' ? (
+                  <>
+                    <span className="ransom-anton">join</span>{' '}
+                    <span className="ransom-hand text-candy-dark">notesly ✨</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="ransom-anton">welcome</span>{' '}
+                    <span className="ransom-hand text-candy-dark">back ✨</span>
+                  </>
+                )}
+              </h1>
+              <p className="mt-2 font-elite text-sm text-ink-soft">
+                {mode === 'signup'
+                  ? 'email + password. takes 5 seconds.'
+                  : 'email + password — get back to studying.'}
+              </p>
 
-                <form onSubmit={sendCode} className="mt-7 space-y-3">
-                  <input
-                    type="email"
-                    required
-                    autoFocus
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@school.in"
-                    className="w-full px-4 py-3 rounded-full bg-cream border border-ink/15 font-sans text-sm focus:outline-none focus:ring-2 focus:ring-candy"
-                  />
-                  <button type="submit" disabled={busy} className="btn-primary w-full text-sm disabled:opacity-60">
-                    {busy ? <Loader2 size={16} className="animate-spin" /> : <Mail size={16} />}
-                    send code
-                    {!busy && <ArrowRight size={14} className="opacity-70" />}
-                  </button>
-                  {error && <p className="text-xs text-candy-dark font-elite">{error}</p>}
-                </form>
-
-                <button
-                  onClick={() => { setStage('password'); setError(null); }}
-                  className="mt-5 w-full text-center text-[11px] font-elite uppercase tracking-wider text-ink-mute hover:text-ink"
-                >
-                  → use password instead
-                </button>
-              </motion.div>
-            )}
-
-            {stage === 'code' && (
-              <motion.div key="code" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}>
-                <h1 className="text-3xl md:text-4xl tracking-tight leading-[1.1]">
-                  <span className="ransom-anton">check</span>{' '}
-                  <span className="ransom-hand text-candy-dark">your inbox 📬</span>
-                </h1>
-                <p className="mt-2 font-elite text-sm text-ink-soft">
-                  we sent a code to <strong className="font-bungee text-ink">{email}</strong>. paste it below.
-                </p>
-
-                <form onSubmit={verifyCode} className="mt-7 space-y-3">
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={10}
-                    required
-                    autoFocus
-                    value={code}
-                    onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
-                    placeholder="12345678"
-                    className="w-full px-4 py-3 rounded-full bg-cream border border-ink/15 font-bungee text-2xl tracking-[0.3em] text-center focus:outline-none focus:ring-2 focus:ring-candy"
-                  />
-                  <button type="submit" disabled={busy || code.length < 6} className="btn-primary w-full text-sm disabled:opacity-60">
-                    {busy ? <Loader2 size={16} className="animate-spin" /> : <KeyRound size={16} />}
-                    sign in
-                  </button>
-                  {error && <p className="text-xs text-candy-dark font-elite">{error}</p>}
-                  <button
-                    type="button"
-                    onClick={() => { setStage('email'); setCode(''); setError(null); }}
-                    className="block w-full text-center text-[11px] font-elite uppercase tracking-wider text-ink-mute hover:text-ink mt-3"
-                  >
-                    ← use a different email
-                  </button>
-                </form>
-              </motion.div>
-            )}
-
-            {stage === 'password' && (
-              <motion.div key="password" initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}>
-                <h1 className="text-3xl md:text-4xl tracking-tight leading-[1.1]">
-                  <span className="ransom-anton">sign in</span>{' '}
-                  <span className="ransom-hand text-candy-dark">fast 🔑</span>
-                </h1>
-                <p className="mt-2 font-elite text-sm text-ink-soft">
-                  email + password — no email rate limits.
-                </p>
-
-                <form onSubmit={signInWithPassword} className="mt-7 space-y-3">
-                  <input
-                    type="email"
-                    required
-                    autoFocus
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@school.in"
-                    className="w-full px-4 py-3 rounded-full bg-cream border border-ink/15 font-sans text-sm focus:outline-none focus:ring-2 focus:ring-candy"
-                  />
+              <form onSubmit={handleSubmit} className="mt-7 space-y-3">
+                <input
+                  type="email"
+                  required
+                  autoFocus
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@school.in"
+                  className="w-full px-4 py-3 rounded-full bg-cream border border-ink/15 font-sans text-sm focus:outline-none focus:ring-2 focus:ring-candy"
+                />
+                <input
+                  type="password"
+                  required
+                  minLength={6}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="password (6+ chars)"
+                  className="w-full px-4 py-3 rounded-full bg-cream border border-ink/15 font-sans text-sm focus:outline-none focus:ring-2 focus:ring-candy"
+                />
+                {mode === 'signup' && (
                   <input
                     type="password"
                     required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
+                    value={confirm}
+                    onChange={(e) => setConfirm(e.target.value)}
+                    placeholder="confirm password"
                     className="w-full px-4 py-3 rounded-full bg-cream border border-ink/15 font-sans text-sm focus:outline-none focus:ring-2 focus:ring-candy"
                   />
-                  <button type="submit" disabled={busy} className="btn-primary w-full text-sm disabled:opacity-60">
-                    {busy ? <Loader2 size={16} className="animate-spin" /> : <Lock size={16} />}
-                    sign in
-                  </button>
-                  {error && <p className="text-xs text-candy-dark font-elite">{error}</p>}
-                  <button
-                    type="button"
-                    onClick={() => { setStage('email'); setPassword(''); setError(null); }}
-                    className="block w-full text-center text-[11px] font-elite uppercase tracking-wider text-ink-mute hover:text-ink mt-3"
-                  >
-                    ← use email code instead
-                  </button>
-                </form>
-              </motion.div>
-            )}
+                )}
+                <button type="submit" disabled={busy} className="btn-primary w-full text-sm disabled:opacity-60">
+                  {busy ? <Loader2 size={16} className="animate-spin" /> : <Lock size={16} />}
+                  {mode === 'signup' ? 'create account' : 'sign in'}
+                </button>
+                {error && <p className="text-xs text-candy-dark font-elite mt-2">{error}</p>}
+              </form>
+            </motion.div>
           </AnimatePresence>
 
           <p className="mt-6 text-[11px] font-elite uppercase tracking-wider text-ink-faint text-center">
@@ -216,5 +158,27 @@ export default function LoginPage() {
         </motion.div>
       </div>
     </main>
+  );
+}
+
+function TabBtn({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      type="button"
+      className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-elite uppercase tracking-wider transition-colors ${
+        active ? 'bg-ink text-cream' : 'text-ink-soft hover:text-ink'
+      }`}
+    >
+      {children}
+    </button>
   );
 }

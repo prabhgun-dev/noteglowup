@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, ArrowRight, Loader2, KeyRound, X } from 'lucide-react';
+import { Loader2, Lock, X, UserPlus, LogIn } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { StarSticker, HeartBubble } from './Stickers';
 
-type Stage = 'email' | 'code';
+type Mode = 'signup' | 'signin';
 
 export function AuthModal({
   open,
@@ -17,22 +17,20 @@ export function AuthModal({
   onClose: () => void;
   onSuccess: () => void;
 }) {
-  const [stage, setStage] = useState<Stage>('email');
+  const [mode, setMode] = useState<Mode>('signup');
   const [email, setEmail] = useState('');
-  const [code, setCode] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Reset stage whenever the modal opens fresh
   useEffect(() => {
     if (open) {
-      setStage('email');
-      setCode('');
       setError(null);
+      setConfirm('');
     }
   }, [open]);
 
-  // ESC to close
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onClose();
@@ -41,33 +39,28 @@ export function AuthModal({
     return () => window.removeEventListener('keydown', onKey);
   }, [open, onClose]);
 
-  async function sendCode(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setBusy(true);
     setError(null);
-    const supabase = createClient();
-    const { error: err } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
-    });
-    setBusy(false);
-    if (err) {
-      setError(err.message);
-      return;
-    }
-    setStage('code');
-  }
 
-  async function verifyCode(e: React.FormEvent) {
-    e.preventDefault();
+    if (mode === 'signup') {
+      if (password.length < 6) {
+        setError('password must be at least 6 characters');
+        return;
+      }
+      if (password !== confirm) {
+        setError("passwords don't match");
+        return;
+      }
+    }
+
     setBusy(true);
-    setError(null);
     const supabase = createClient();
-    const { error: err } = await supabase.auth.verifyOtp({
-      email,
-      token: code.trim(),
-      type: 'email',
-    });
+    const { error: err } =
+      mode === 'signup'
+        ? await supabase.auth.signUp({ email, password })
+        : await supabase.auth.signInWithPassword({ email, password });
+
     if (err) {
       setBusy(false);
       setError(err.message);
@@ -75,6 +68,12 @@ export function AuthModal({
     }
     setBusy(false);
     onSuccess();
+  }
+
+  function switchMode(next: Mode) {
+    setMode(next);
+    setError(null);
+    setConfirm('');
   }
 
   return (
@@ -106,101 +105,105 @@ export function AuthModal({
             <StarSticker className="absolute -top-4 -left-4 -rotate-12" size={32} />
             <HeartBubble className="absolute -top-3 -right-2 rotate-12" count={1} />
 
-            <AnimatePresence mode="wait">
-              {stage === 'email' ? (
-                <motion.div
-                  key="email"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <h2 className="text-3xl tracking-tight leading-[1.1]">
-                    <span className="ransom-anton">one</span>{' '}
-                    <span className="ransom-elite">more</span>{' '}
-                    <span className="ransom-hand text-candy-dark">step ✨</span>
-                  </h2>
-                  <p className="mt-2 font-elite text-sm text-ink-soft">
-                    sign in with email — we&apos;ll save your conversions so you don&apos;t lose them.
-                  </p>
+            <div className="flex items-center gap-1 p-1 rounded-full bg-rose/40 border border-ink/15 mb-6">
+              <TabBtn active={mode === 'signup'} onClick={() => switchMode('signup')}>
+                <UserPlus size={14} /> create account
+              </TabBtn>
+              <TabBtn active={mode === 'signin'} onClick={() => switchMode('signin')}>
+                <LogIn size={14} /> sign in
+              </TabBtn>
+            </div>
 
-                  <form onSubmit={sendCode} className="mt-6 space-y-3">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={mode}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.18 }}
+              >
+                <h2 className="text-2xl md:text-3xl tracking-tight leading-[1.1]">
+                  {mode === 'signup' ? (
+                    <>
+                      <span className="ransom-anton">one</span>{' '}
+                      <span className="ransom-elite">more</span>{' '}
+                      <span className="ransom-hand text-candy-dark">step ✨</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="ransom-anton">welcome</span>{' '}
+                      <span className="ransom-hand text-candy-dark">back ✨</span>
+                    </>
+                  )}
+                </h2>
+                <p className="mt-2 font-elite text-sm text-ink-soft">
+                  {mode === 'signup'
+                    ? 'save your conversions — takes 5 seconds.'
+                    : 'sign in to keep your notes safe.'}
+                </p>
+
+                <form onSubmit={handleSubmit} className="mt-6 space-y-3">
+                  <input
+                    type="email"
+                    required
+                    autoFocus
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@school.in"
+                    className="w-full px-4 py-3 rounded-full bg-cream border border-ink/15 font-sans text-sm focus:outline-none focus:ring-2 focus:ring-candy"
+                  />
+                  <input
+                    type="password"
+                    required
+                    minLength={6}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="password (6+ chars)"
+                    className="w-full px-4 py-3 rounded-full bg-cream border border-ink/15 font-sans text-sm focus:outline-none focus:ring-2 focus:ring-candy"
+                  />
+                  {mode === 'signup' && (
                     <input
-                      type="email"
+                      type="password"
                       required
-                      autoFocus
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="you@school.in"
+                      value={confirm}
+                      onChange={(e) => setConfirm(e.target.value)}
+                      placeholder="confirm password"
                       className="w-full px-4 py-3 rounded-full bg-cream border border-ink/15 font-sans text-sm focus:outline-none focus:ring-2 focus:ring-candy"
                     />
-                    <button
-                      type="submit"
-                      disabled={busy}
-                      className="btn-primary w-full text-sm disabled:opacity-60"
-                    >
-                      {busy ? <Loader2 size={16} className="animate-spin" /> : <Mail size={16} />}
-                      send code
-                      {!busy && <ArrowRight size={14} className="opacity-70" />}
-                    </button>
-                    {error && (
-                      <p className="text-xs text-candy-dark font-elite">{error}</p>
-                    )}
-                  </form>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="code"
-                  initial={{ opacity: 0, x: 16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <h2 className="text-3xl tracking-tight leading-[1.1]">
-                    <span className="ransom-anton">check</span>{' '}
-                    <span className="ransom-hand text-candy-dark">inbox 📬</span>
-                  </h2>
-                  <p className="mt-2 font-elite text-sm text-ink-soft">
-                    code sent to <strong className="font-bungee text-ink">{email}</strong>
-                  </p>
-
-                  <form onSubmit={verifyCode} className="mt-6 space-y-3">
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={10}
-                      required
-                      autoFocus
-                      value={code}
-                      onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
-                      placeholder="12345678"
-                      className="w-full px-4 py-3 rounded-full bg-cream border border-ink/15 font-bungee text-2xl tracking-[0.3em] text-center focus:outline-none focus:ring-2 focus:ring-candy"
-                    />
-                    <button
-                      type="submit"
-                      disabled={busy || code.length < 6}
-                      className="btn-primary w-full text-sm disabled:opacity-60"
-                    >
-                      {busy ? <Loader2 size={16} className="animate-spin" /> : <KeyRound size={16} />}
-                      sign in & continue
-                    </button>
-                    {error && <p className="text-xs text-candy-dark font-elite">{error}</p>}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setStage('email');
-                        setCode('');
-                        setError(null);
-                      }}
-                      className="block w-full text-center text-[11px] font-elite uppercase tracking-wider text-ink-mute hover:text-ink mt-2"
-                    >
-                      ← different email
-                    </button>
-                  </form>
-                </motion.div>
-              )}
+                  )}
+                  <button type="submit" disabled={busy} className="btn-primary w-full text-sm disabled:opacity-60">
+                    {busy ? <Loader2 size={16} className="animate-spin" /> : <Lock size={16} />}
+                    {mode === 'signup' ? 'create & continue' : 'sign in & continue'}
+                  </button>
+                  {error && <p className="text-xs text-candy-dark font-elite">{error}</p>}
+                </form>
+              </motion.div>
             </AnimatePresence>
           </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
+  );
+}
+
+function TabBtn({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      type="button"
+      className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-elite uppercase tracking-wider transition-colors ${
+        active ? 'bg-ink text-cream' : 'text-ink-soft hover:text-ink'
+      }`}
+    >
+      {children}
+    </button>
   );
 }

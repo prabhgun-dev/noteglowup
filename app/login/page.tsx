@@ -4,17 +4,18 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, ArrowRight, Loader2, KeyRound } from 'lucide-react';
+import { Mail, ArrowRight, Loader2, KeyRound, Lock } from 'lucide-react';
 import { Logo } from '@/components/Logo';
 import { StarSticker, StarBlack, HeartBubble } from '@/components/Stickers';
 import { createClient } from '@/lib/supabase/client';
 
-type Stage = 'email' | 'code';
+type Stage = 'email' | 'code' | 'password';
 
 export default function LoginPage() {
   const router = useRouter();
   const [stage, setStage] = useState<Stage>('email');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,6 +56,21 @@ export default function LoginPage() {
     router.refresh();
   }
 
+  async function signInWithPassword(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setError(null);
+    const supabase = createClient();
+    const { error: err } = await supabase.auth.signInWithPassword({ email, password });
+    if (err) {
+      setBusy(false);
+      setError(err.message);
+      return;
+    }
+    router.push('/app');
+    router.refresh();
+  }
+
   return (
     <main className="min-h-screen flex flex-col">
       <header className="px-6 h-16 flex items-center">
@@ -74,52 +90,45 @@ export default function LoginPage() {
           className="paper-card w-full max-w-md p-8 md:p-10 -rotate-1"
         >
           <AnimatePresence mode="wait">
-            {stage === 'email' ? (
-              <motion.div
-                key="email"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
+            {stage === 'email' && (
+              <motion.div key="email" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                 <h1 className="text-3xl md:text-4xl tracking-tight leading-[1.1]">
                   <span className="ransom-anton">welcome</span>{' '}
                   <span className="ransom-hand text-candy-dark">back ✨</span>
                 </h1>
                 <p className="mt-2 font-elite text-sm text-ink-soft">
-                  enter your email — we&apos;ll send a 6-digit code.
+                  enter your email — we&apos;ll send a code.
                 </p>
 
                 <form onSubmit={sendCode} className="mt-7 space-y-3">
-                  <label className="block">
-                    <span className="font-elite text-[11px] uppercase tracking-wider text-ink-mute">
-                      your email
-                    </span>
-                    <input
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="you@school.in"
-                      className="mt-1.5 w-full px-4 py-3 rounded-full bg-cream border border-ink/15 font-sans text-sm focus:outline-none focus:ring-2 focus:ring-candy"
-                    />
-                  </label>
+                  <input
+                    type="email"
+                    required
+                    autoFocus
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@school.in"
+                    className="w-full px-4 py-3 rounded-full bg-cream border border-ink/15 font-sans text-sm focus:outline-none focus:ring-2 focus:ring-candy"
+                  />
                   <button type="submit" disabled={busy} className="btn-primary w-full text-sm disabled:opacity-60">
                     {busy ? <Loader2 size={16} className="animate-spin" /> : <Mail size={16} />}
                     send code
                     {!busy && <ArrowRight size={14} className="opacity-70" />}
                   </button>
-                  {error && (
-                    <p className="text-xs text-candy-dark mt-2 font-elite">{error}</p>
-                  )}
+                  {error && <p className="text-xs text-candy-dark font-elite">{error}</p>}
                 </form>
+
+                <button
+                  onClick={() => { setStage('password'); setError(null); }}
+                  className="mt-5 w-full text-center text-[11px] font-elite uppercase tracking-wider text-ink-mute hover:text-ink"
+                >
+                  → use password instead
+                </button>
               </motion.div>
-            ) : (
-              <motion.div
-                key="code"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0 }}
-              >
+            )}
+
+            {stage === 'code' && (
+              <motion.div key="code" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}>
                 <h1 className="text-3xl md:text-4xl tracking-tight leading-[1.1]">
                   <span className="ransom-anton">check</span>{' '}
                   <span className="ransom-hand text-candy-dark">your inbox 📬</span>
@@ -129,39 +138,72 @@ export default function LoginPage() {
                 </p>
 
                 <form onSubmit={verifyCode} className="mt-7 space-y-3">
-                  <label className="block">
-                    <span className="font-elite text-[11px] uppercase tracking-wider text-ink-mute">
-                      code from email
-                    </span>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={10}
-                      required
-                      autoFocus
-                      value={code}
-                      onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
-                      placeholder="12345678"
-                      className="mt-1.5 w-full px-4 py-3 rounded-full bg-cream border border-ink/15 font-bungee text-2xl tracking-[0.3em] text-center focus:outline-none focus:ring-2 focus:ring-candy"
-                    />
-                  </label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={10}
+                    required
+                    autoFocus
+                    value={code}
+                    onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+                    placeholder="12345678"
+                    className="w-full px-4 py-3 rounded-full bg-cream border border-ink/15 font-bungee text-2xl tracking-[0.3em] text-center focus:outline-none focus:ring-2 focus:ring-candy"
+                  />
                   <button type="submit" disabled={busy || code.length < 6} className="btn-primary w-full text-sm disabled:opacity-60">
                     {busy ? <Loader2 size={16} className="animate-spin" /> : <KeyRound size={16} />}
                     sign in
                   </button>
-                  {error && (
-                    <p className="text-xs text-candy-dark mt-2 font-elite">{error}</p>
-                  )}
+                  {error && <p className="text-xs text-candy-dark font-elite">{error}</p>}
                   <button
                     type="button"
-                    onClick={() => {
-                      setStage('email');
-                      setCode('');
-                      setError(null);
-                    }}
+                    onClick={() => { setStage('email'); setCode(''); setError(null); }}
                     className="block w-full text-center text-[11px] font-elite uppercase tracking-wider text-ink-mute hover:text-ink mt-3"
                   >
                     ← use a different email
+                  </button>
+                </form>
+              </motion.div>
+            )}
+
+            {stage === 'password' && (
+              <motion.div key="password" initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}>
+                <h1 className="text-3xl md:text-4xl tracking-tight leading-[1.1]">
+                  <span className="ransom-anton">sign in</span>{' '}
+                  <span className="ransom-hand text-candy-dark">fast 🔑</span>
+                </h1>
+                <p className="mt-2 font-elite text-sm text-ink-soft">
+                  email + password — no email rate limits.
+                </p>
+
+                <form onSubmit={signInWithPassword} className="mt-7 space-y-3">
+                  <input
+                    type="email"
+                    required
+                    autoFocus
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@school.in"
+                    className="w-full px-4 py-3 rounded-full bg-cream border border-ink/15 font-sans text-sm focus:outline-none focus:ring-2 focus:ring-candy"
+                  />
+                  <input
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full px-4 py-3 rounded-full bg-cream border border-ink/15 font-sans text-sm focus:outline-none focus:ring-2 focus:ring-candy"
+                  />
+                  <button type="submit" disabled={busy} className="btn-primary w-full text-sm disabled:opacity-60">
+                    {busy ? <Loader2 size={16} className="animate-spin" /> : <Lock size={16} />}
+                    sign in
+                  </button>
+                  {error && <p className="text-xs text-candy-dark font-elite">{error}</p>}
+                  <button
+                    type="button"
+                    onClick={() => { setStage('email'); setPassword(''); setError(null); }}
+                    className="block w-full text-center text-[11px] font-elite uppercase tracking-wider text-ink-mute hover:text-ink mt-3"
+                  >
+                    ← use email code instead
                   </button>
                 </form>
               </motion.div>

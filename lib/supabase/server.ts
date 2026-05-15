@@ -1,12 +1,22 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
+function requireEnv(name: string): string {
+  const v = process.env[name];
+  if (!v) {
+    throw new Error(
+      `${name} is not set. Add Supabase env vars in Vercel → Settings → Environment Variables, then redeploy.`,
+    );
+  }
+  return v;
+}
+
 export function createClient() {
   const cookieStore = cookies();
 
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    requireEnv('NEXT_PUBLIC_SUPABASE_URL'),
+    requireEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY'),
     {
       cookies: {
         getAll() {
@@ -18,7 +28,7 @@ export function createClient() {
               cookieStore.set(name, value, options),
             );
           } catch {
-            // Setting from a Server Component is a no-op; middleware handles refresh.
+            // no-op in Server Components; middleware handles refresh
           }
         },
       },
@@ -27,10 +37,9 @@ export function createClient() {
 }
 
 export function createServiceClient() {
-  // Bypasses RLS — use only on the server, never expose to the client.
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    requireEnv('NEXT_PUBLIC_SUPABASE_URL'),
+    requireEnv('SUPABASE_SERVICE_ROLE_KEY'),
     {
       cookies: { getAll: () => [], setAll: () => {} },
     },

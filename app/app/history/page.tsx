@@ -26,7 +26,7 @@ export default async function HistoryPage() {
 
   return (
     <main className="min-h-screen">
-      <AppHeader quota={quota} email={user.email ?? undefined} />
+      <AppHeader quota={quota} email={user.email ?? undefined} authed={true} />
 
       <div className="mx-auto max-w-4xl px-6 py-12 md:py-16 relative">
         <StarSticker className="hidden md:block absolute top-8 right-8 rotate-12" size={26} />

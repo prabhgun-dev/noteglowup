@@ -1,27 +1,29 @@
-import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { getQuota } from '@/lib/quota';
+import { getQuota, type QuotaStatus } from '@/lib/quota';
 import { AppHeader } from '@/components/AppHeader';
 import { Workbench } from '@/components/Workbench';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AppPage() {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
+  let quota: QuotaStatus | null = null;
 
-  if (!user) {
-    redirect('/login');
+  try {
+    const supabase = createClient();
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+    if (user) {
+      quota = await getQuota(user.id);
+    }
+  } catch {
+    // Supabase not configured yet — render as anon
   }
-
-  const quota = await getQuota(user.id);
 
   return (
     <main className="min-h-screen">
-      <AppHeader quota={quota} email={user.email ?? undefined} />
-      <Workbench />
+      <AppHeader quota={quota} email={user?.email ?? undefined} authed={!!user} />
+      <Workbench initialAuthed={!!user} />
     </main>
   );
 }

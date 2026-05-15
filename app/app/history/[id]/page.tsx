@@ -35,7 +35,7 @@ export default async function HistoryDetail({ params }: { params: { id: string }
 
   return (
     <main className="min-h-screen">
-      <AppHeader quota={quota} email={user.email ?? undefined} />
+      <AppHeader quota={quota} email={user.email ?? undefined} authed={true} />
       <div className="px-6 py-10 md:py-14">
         <div className="max-w-4xl mx-auto mb-6">
           <Link href="/app/history" className="btn-ghost">

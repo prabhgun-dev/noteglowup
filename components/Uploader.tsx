@@ -8,9 +8,11 @@ import type { ConvertResponse } from '@/lib/types';
 
 type Props = {
   onResult: (result: ConvertResponse) => void;
+  /** Return true if signed in (or just signed in); false if user cancelled. */
+  requireAuth?: () => Promise<boolean>;
 };
 
-export function Uploader({ onResult }: Props) {
+export function Uploader({ onResult, requireAuth }: Props) {
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
@@ -36,8 +38,7 @@ export function Uploader({ onResult }: Props) {
     setPreviews((prev) => prev.filter((_, idx) => idx !== i));
   };
 
-  const submit = async () => {
-    if (files.length === 0) return;
+  async function runConversion() {
     setBusy(true);
     setError(null);
     try {
@@ -46,7 +47,16 @@ export function Uploader({ onResult }: Props) {
       const res = await fetch('/api/convert', { method: 'POST', body: fd });
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
-        throw new Error(j.error || `Request failed (${res.status})`);
+        if (res.status === 401 && requireAuth) {
+          // session expired between auth check and submit — retry
+          const ok = await requireAuth();
+          if (ok) {
+            setBusy(false);
+            return runConversion();
+          }
+          throw new Error('Sign in to continue');
+        }
+        throw new Error(j.error || j.message || `Request failed (${res.status})`);
       }
       const data = (await res.json()) as ConvertResponse;
       onResult(data);
@@ -55,7 +65,16 @@ export function Uploader({ onResult }: Props) {
     } finally {
       setBusy(false);
     }
-  };
+  }
+
+  async function submit() {
+    if (files.length === 0) return;
+    if (requireAuth) {
+      const ok = await requireAuth();
+      if (!ok) return;
+    }
+    await runConversion();
+  }
 
   return (
     <div className="w-full max-w-3xl mx-auto">
@@ -72,10 +91,10 @@ export function Uploader({ onResult }: Props) {
         <h3 className="font-serif text-2xl md:text-3xl">
           Drop your <span className="font-hand text-candy-dark">notes</span> here
         </h3>
-        <p className="text-ink-soft mt-2 text-sm">
+        <p className="text-ink-soft mt-2 text-sm font-elite">
           Or tap to choose — up to 20 pages. JPG, PNG, HEIC.
         </p>
-        <div className="mt-6 flex items-center justify-center gap-2 text-xs text-ink-mute">
+        <div className="mt-6 flex items-center justify-center gap-2 text-xs text-ink-mute font-elite uppercase tracking-wider">
           <Camera size={14} /> Phone camera works too
         </div>
       </div>
@@ -88,7 +107,7 @@ export function Uploader({ onResult }: Props) {
         >
           <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
             {previews.map((src, i) => (
-              <div key={src} className="relative aspect-[3/4] rounded-xl overflow-hidden bg-rose-light group">
+              <div key={src} className="relative aspect-[3/4] rounded-xl overflow-hidden bg-rose-light group border border-ink/10">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={src} alt={`page ${i + 1}`} className="w-full h-full object-cover" />
                 <button
@@ -99,7 +118,7 @@ export function Uploader({ onResult }: Props) {
                 >
                   <X size={12} />
                 </button>
-                <span className="absolute bottom-1.5 left-1.5 text-[10px] px-1.5 py-0.5 rounded bg-cream/90 text-ink-soft">
+                <span className="absolute bottom-1.5 left-1.5 text-[10px] px-1.5 py-0.5 rounded bg-cream/90 text-ink-soft font-elite uppercase">
                   pg {i + 1}
                 </span>
               </div>
@@ -107,7 +126,7 @@ export function Uploader({ onResult }: Props) {
           </div>
 
           <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="text-sm text-ink-soft">
+            <p className="text-sm text-ink-soft font-elite">
               {files.length} {files.length === 1 ? 'page' : 'pages'} ready
             </p>
             <button onClick={submit} disabled={busy} className="btn-primary disabled:opacity-60">
@@ -124,7 +143,7 @@ export function Uploader({ onResult }: Props) {
       )}
 
       {error && (
-        <div className="mt-4 rounded-xl border border-candy-dark/40 bg-rose-light text-ink-soft px-4 py-3 text-sm">
+        <div className="mt-4 rounded-xl border border-candy-dark/40 bg-rose-light text-ink-soft px-4 py-3 text-sm font-elite">
           {error}
         </div>
       )}

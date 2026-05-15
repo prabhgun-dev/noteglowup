@@ -4,7 +4,15 @@ import { Logo } from './Logo';
 import { signOut } from '@/app/app/actions';
 import type { QuotaStatus } from '@/lib/quota';
 
-export function AppHeader({ quota, email }: { quota: QuotaStatus; email?: string }) {
+export function AppHeader({
+  quota,
+  email,
+  authed,
+}: {
+  quota: QuotaStatus | null;
+  email?: string;
+  authed: boolean;
+}) {
   return (
     <header className="sticky top-0 z-40 backdrop-blur-md bg-dogwood/80 border-b border-ink/10 no-print">
       <div className="mx-auto max-w-6xl px-6 h-16 flex items-center justify-between">
@@ -13,16 +21,28 @@ export function AppHeader({ quota, email }: { quota: QuotaStatus; email?: string
         </Link>
 
         <div className="flex items-center gap-2">
-          <Link href="/app/history" className="btn-ghost text-xs">
-            <History size={14} /> History
-          </Link>
-          <QuotaBadge quota={quota} />
-          <form action={signOut}>
-            <button type="submit" className="btn-ghost text-xs" title={email}>
-              <LogOut size={14} />
-              <span className="hidden sm:inline">Sign out</span>
-            </button>
-          </form>
+          {authed ? (
+            <>
+              <Link href="/app/history" className="btn-ghost text-xs">
+                <History size={14} />
+                <span className="hidden sm:inline">History</span>
+              </Link>
+              {quota && <QuotaBadge quota={quota} />}
+              <form action={signOut}>
+                <button type="submit" className="btn-ghost text-xs" title={email}>
+                  <LogOut size={14} />
+                  <span className="hidden sm:inline">Sign out</span>
+                </button>
+              </form>
+            </>
+          ) : (
+            <>
+              <span className="pill hidden sm:inline-flex">10 free / month</span>
+              <Link href="/login" className="btn-primary text-xs">
+                Sign in
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>

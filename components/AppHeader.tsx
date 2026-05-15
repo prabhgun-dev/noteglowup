@@ -36,12 +36,7 @@ export function AppHeader({
               </form>
             </>
           ) : (
-            <>
-              <span className="pill hidden sm:inline-flex">10 free / month</span>
-              <Link href="/login" className="btn-primary text-xs">
-                Sign in
-              </Link>
-            </>
+            <span className="pill">10 free / month · no card</span>
           )}
         </div>
       </div>

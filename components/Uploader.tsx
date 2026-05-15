@@ -5,6 +5,7 @@ import { useDropzone } from 'react-dropzone';
 import { motion } from 'framer-motion';
 import { Camera, Upload, X, Loader2 } from 'lucide-react';
 import type { ConvertResponse } from '@/lib/types';
+import { resizeImage } from '@/lib/resizeImage';
 
 type Props = {
   onResult: (result: ConvertResponse) => void;
@@ -42,8 +43,10 @@ export function Uploader({ onResult, requireAuth }: Props) {
     setBusy(true);
     setError(null);
     try {
+      // Resize each image in the browser to keep total payload under Vercel's 4.5MB limit
+      const resized = await Promise.all(files.map((f) => resizeImage(f)));
       const fd = new FormData();
-      files.forEach((f) => fd.append('images', f));
+      resized.forEach((f) => fd.append('images', f));
       const res = await fetch('/api/convert', { method: 'POST', body: fd });
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));

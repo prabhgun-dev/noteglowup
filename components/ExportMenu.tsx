@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Download, FileText, Layers, FileDown, Check, Loader2 } from 'lucide-react';
+import { Download, FileText, Layers, FileDown, Check, Loader2, Code2 } from 'lucide-react';
 import type { ConvertResponse } from '@/lib/types';
 
 type Props = {
@@ -9,7 +9,7 @@ type Props = {
   prepareForPdf?: () => Promise<void>;
 };
 
-type Format = 'quizlet' | 'anki' | 'pdf';
+type Format = 'quizlet' | 'anki' | 'pdf' | 'html';
 
 export function ExportMenu({ result, prepareForPdf }: Props) {
   const [open, setOpen] = useState(false);
@@ -25,17 +25,27 @@ export function ExportMenu({ result, prepareForPdf }: Props) {
     return () => document.removeEventListener('mousedown', onClick);
   }, []);
 
-  async function downloadServerExport(format: 'quizlet' | 'anki') {
+  async function downloadServerExport(format: 'quizlet' | 'anki' | 'html') {
     setBusy(format);
     try {
+      const body =
+        format === 'html'
+          ? {
+              title: result.title,
+              subject: result.subject,
+              notesMarkdown: result.notesMarkdown,
+            }
+          : { title: result.title, flashcards: result.flashcards };
+
       const res = await fetch(`/api/export/${format}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: result.title, flashcards: result.flashcards }),
+        body: JSON.stringify(body),
       });
       if (!res.ok) throw new Error(`Request failed (${res.status})`);
       const blob = await res.blob();
-      triggerDownload(blob, fileName(res, `${format}.txt`));
+      const fallback = format === 'html' ? `${slug(result.title)}.html` : `${format}.txt`;
+      triggerDownload(blob, fileName(res, fallback));
       setDone(format);
     } catch (err) {
       console.error('[export]', err);
@@ -145,6 +155,14 @@ export function ExportMenu({ result, prepareForPdf }: Props) {
 
       {open && (
         <div className="absolute right-0 mt-2 w-72 paper-card p-2 z-30 shadow-lift">
+          <MenuItem
+            icon={Code2}
+            title="HTML"
+            subtitle="open & print from browser"
+            busy={busy === 'html'}
+            done={done === 'html'}
+            onClick={() => downloadServerExport('html')}
+          />
           <MenuItem
             icon={FileDown}
             title="PDF"

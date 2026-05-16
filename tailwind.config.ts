@@ -30,6 +30,16 @@ const config: Config = {
           light: '#FFE89C',
           dark: '#E8BC3A',
         },
+        sage: {
+          DEFAULT: '#C8DDB5',
+          light: '#DCEACE',
+          dark: '#9DBC85',
+        },
+        sky: {
+          DEFAULT: '#BCDDF0',
+          light: '#DCEDF7',
+          dark: '#7CB4D6',
+        },
         cream: '#FFF8F1',
         ink: {
           DEFAULT: '#1A1212',

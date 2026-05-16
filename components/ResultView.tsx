@@ -22,7 +22,7 @@ export function ResultView({ result, onReset }: { result: ConvertResponse; onRes
   }, [tab]);
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full max-w-7xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6 no-print">
         <button onClick={onReset} className="btn-ghost self-start">
           <ArrowLeft size={16} /> New conversion

@@ -85,9 +85,9 @@ html, body {
 .page {
   position: relative;
   background: #FFFBF2;
-  max-width: 880px;
+  max-width: 1280px;
   margin: 40px auto;
-  padding: 60px 70px 70px;
+  padding: 70px 90px 90px;
   border-radius: 18px;
   box-shadow: 0 1px 2px rgba(26,18,18,0.06), 0 24px 60px -20px rgba(26,18,18,0.25);
   border: 1px solid rgba(26,18,18,0.08);
@@ -96,73 +96,95 @@ html, body {
 .grid-bg {
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(to right, rgba(26,18,18,0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(26,18,18,0.06) 1px, transparent 1px);
-  background-size: 26px 26px;
+  background-image: radial-gradient(rgba(26,18,18,0.13) 1px, transparent 1.2px);
+  background-size: 22px 22px;
   pointer-events: none;
 }
 .content { position: relative; z-index: 1; }
 
-.doc-title { margin: 0 0 12px; line-height: 1.05; }
+.doc-title { margin: 0 0 18px; line-height: 1.02; }
 .doc-title span {
   display: inline-block;
   font-family: 'Patrick Hand', cursive;
-  font-size: 56px;
+  font-size: 86px;
   background: #C8DDB5;
-  background-size: 100% 70%;
+  background-size: 100% 68%;
   background-repeat: no-repeat;
-  background-position: 0 60%;
-  padding: 0.05em 0.3em;
+  background-position: 0 62%;
+  padding: 0.06em 0.32em;
+  letter-spacing: 0.005em;
 }
-.doc-subject { margin: 0 0 36px; }
+.doc-subject { margin: 0 0 56px; }
 .doc-subject span {
   display: inline-block;
   font-family: 'Caveat', cursive;
   font-weight: 700;
   font-style: italic;
-  font-size: 28px;
-  background: rgba(252,215,87,0.6);
+  font-size: 34px;
+  background: rgba(252,215,87,0.65);
   background-repeat: no-repeat;
-  background-size: 100% 60%;
-  background-position: 0 75%;
-  padding: 0 0.3em;
+  background-size: 100% 55%;
+  background-position: 0 78%;
+  padding: 0 0.32em;
+  transform: rotate(-1.2deg);
+  transform-origin: left center;
 }
 
-.notes { font-family: 'Patrick Hand', 'Comic Sans MS', cursive; font-size: 19px; line-height: 1.65; }
+.notes {
+  font-family: 'Patrick Hand', 'Comic Sans MS', cursive;
+  font-size: 19px;
+  line-height: 1.7;
+}
+
+/* MAGAZINE 2-COLUMN FLOW */
+@media (min-width: 900px) {
+  .notes {
+    column-count: 2;
+    column-gap: 56px;
+    column-rule: 1px dashed rgba(26,18,18,0.12);
+  }
+}
+.notes h2, .notes hr, .notes table, .notes blockquote {
+  column-span: all; -webkit-column-span: all;
+}
+.notes h3, .notes ul, .notes ol, .notes p {
+  break-inside: avoid; page-break-inside: avoid;
+}
 
 .notes h2 {
   font-family: 'Patrick Hand', cursive;
-  font-size: 26px;
+  font-size: 32px;
   font-weight: 400;
   display: inline-block;
   background: #C8DDB5;
-  background-size: 100% 75%;
+  background-size: 100% 72%;
   background-repeat: no-repeat;
-  background-position: 0 70%;
-  padding: 0.1em 0.5em;
-  margin: 36px 0 14px;
-  border-radius: 2px;
+  background-position: 0 68%;
+  padding: 0.1em 0.55em;
+  margin: 56px 0 22px;
+  border-radius: 3px;
+  transform: rotate(-0.5deg);
+  transform-origin: left center;
 }
-.notes h2:nth-of-type(2n) { background: #FCD757; background-size: 100% 75%; background-repeat: no-repeat; background-position: 0 70%; }
-.notes h2:nth-of-type(3n) { background: #F4ACB7; background-size: 100% 75%; background-repeat: no-repeat; background-position: 0 70%; }
-.notes h2:nth-of-type(4n) { background: #BCDDF0; background-size: 100% 75%; background-repeat: no-repeat; background-position: 0 70%; }
+.notes h2:nth-of-type(2n) { background: #FCD757; background-size: 100% 72%; background-repeat: no-repeat; background-position: 0 68%; transform: rotate(0.4deg); }
+.notes h2:nth-of-type(3n) { background: #F4ACB7; background-size: 100% 72%; background-repeat: no-repeat; background-position: 0 68%; transform: rotate(-0.7deg); }
+.notes h2:nth-of-type(4n) { background: #BCDDF0; background-size: 100% 72%; background-repeat: no-repeat; background-position: 0 68%; transform: rotate(0.6deg); }
 
 .notes h3 {
   font-family: 'Caveat', cursive;
   font-weight: 700;
-  font-size: 30px;
+  font-size: 36px;
   display: inline-block;
-  background: rgba(244,172,183,0.6);
-  background-size: 100% 65%;
+  background: rgba(244,172,183,0.55);
+  background-size: 100% 60%;
   background-repeat: no-repeat;
   background-position: 0 80%;
-  padding: 0 0.3em;
+  padding: 0 0.32em;
   margin: 24px 0 8px;
-  line-height: 1.05;
+  line-height: 1.0;
 }
 
-.notes p { margin: 8px 0 14px; }
+.notes p { margin: 6px 0 14px; }
 
 .notes strong {
   font-weight: 400;
@@ -226,14 +248,14 @@ html, body {
 .notes blockquote {
   background: #FFE89C;
   border: 2px dashed #1A1212;
-  border-radius: 8px;
-  padding: 14px 18px;
-  margin: 22px 0;
+  border-radius: 10px;
+  padding: 18px 22px;
+  margin: 28px 0;
   font-family: 'Patrick Hand', cursive;
-  font-size: 18px;
+  font-size: 19px;
   position: relative;
-  transform: rotate(-0.6deg);
-  box-shadow: 2px 3px 0 rgba(0,0,0,0.1);
+  transform: rotate(-0.4deg);
+  box-shadow: 2px 4px 0 rgba(0,0,0,0.1);
 }
 .notes blockquote::before {
   content: '💡';

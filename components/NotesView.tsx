@@ -1,59 +1,63 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Patrick_Hand, Caveat } from 'next/font/google';
-import { StarSticker, StarPink, Lightbulb, HeartBubble } from './Stickers';
+import { StarSticker, StarPink, Lightbulb, HeartBubble, Pushpin } from './Stickers';
 
 // Direct font load — guarantees Patrick Hand and Caveat are bundled with this component
-// and applied via className (more reliable than CSS variables for html2canvas snapshots).
 const handwriting = Patrick_Hand({ subsets: ['latin'], weight: '400' });
 const cursive = Caveat({ subsets: ['latin'], weight: ['400', '700'] });
 
 export function NotesView({ markdown, title, subject }: { markdown: string; title: string; subject?: string }) {
   return (
     <article className={`relative bg-cream rounded-2xl border border-ink/10 shadow-paper overflow-hidden ${handwriting.className}`}>
-      {/* Grid paper background */}
-      <div className="absolute inset-0 grid-paper pointer-events-none" />
+      {/* Dotted notebook paper background */}
+      <div className="absolute inset-0 dot-paper pointer-events-none" />
 
-      {/* Decorative doodles scattered like in iPad notes */}
-      <Lightbulb className="absolute top-8 left-6 -rotate-12 hidden md:block z-10" size={32} />
-      <StarSticker className="absolute top-10 right-10 rotate-12 z-10" size={30} />
-      <HeartBubble className="absolute bottom-10 right-8 -rotate-6 hidden md:block z-10" count={1} />
-      <StarPink className="absolute bottom-16 left-10 rotate-12 hidden md:block z-10" size={22} />
+      {/* Scattered doodles */}
+      <Lightbulb className="absolute top-10 left-8 -rotate-12 hidden md:block z-10" size={36} />
+      <StarSticker className="absolute top-12 right-12 rotate-12 z-10" size={34} />
+      <Pushpin className="absolute top-1/3 right-6 -rotate-6 hidden lg:block z-10" size={28} />
+      <HeartBubble className="absolute bottom-14 right-10 -rotate-6 hidden md:block z-10" count={1} />
+      <StarPink className="absolute bottom-20 left-12 rotate-12 hidden md:block z-10" size={26} />
 
-      <div className="relative z-20 px-8 md:px-16 py-12 md:py-16">
-        {/* Title block — big handwritten with sage highlighter strip */}
-        <div className="mb-6">
+      <div className="relative z-20 px-8 md:px-16 lg:px-24 py-14 md:py-20">
+        {/* Title block — huge marker title on sage strip */}
+        <header className="mb-12 md:mb-16">
           <h1 className="inline-block">
             <span
-              className={`${handwriting.className} text-4xl md:text-6xl leading-[1.1] text-ink`}
+              className={`${handwriting.className} text-5xl md:text-7xl lg:text-8xl leading-[1.02] text-ink`}
               style={{
                 background: 'linear-gradient(120deg, rgba(200,221,181,0.85) 0%, rgba(200,221,181,0.85) 100%)',
                 backgroundRepeat: 'no-repeat',
-                backgroundSize: '100% 70%',
-                backgroundPosition: '0 60%',
-                padding: '0.1em 0.3em',
+                backgroundSize: '100% 68%',
+                backgroundPosition: '0 62%',
+                padding: '0.08em 0.35em',
+                letterSpacing: '0.005em',
               }}
             >
               {title}
             </span>
           </h1>
-        </div>
-
-        {subject && (
-          <p
-            className={`${cursive.className} text-2xl md:text-3xl italic text-ink-soft mb-8 inline-block`}
-            style={{
-              background: 'linear-gradient(120deg, rgba(252,215,87,0.6) 0%, rgba(252,215,87,0.6) 100%)',
-              backgroundRepeat: 'no-repeat',
-              backgroundSize: '100% 60%',
-              backgroundPosition: '0 75%',
-              padding: '0 0.3em',
-              fontWeight: 700,
-            }}
-          >
-            {subject.toLowerCase()}
-          </p>
-        )}
+          {subject && (
+            <p className="mt-5">
+              <span
+                className={`${cursive.className} text-3xl md:text-4xl italic text-ink-soft inline-block`}
+                style={{
+                  background: 'linear-gradient(120deg, rgba(252,215,87,0.65) 0%, rgba(252,215,87,0.65) 100%)',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: '100% 55%',
+                  backgroundPosition: '0 78%',
+                  padding: '0 0.32em',
+                  fontWeight: 700,
+                  transform: 'rotate(-1.2deg)',
+                  transformOrigin: 'left center',
+                }}
+              >
+                {subject.toLowerCase()}
+              </span>
+            </p>
+          )}
+        </header>
 
         <div className="prose-notes">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
@@ -61,80 +65,109 @@ export function NotesView({ markdown, title, subject }: { markdown: string; titl
       </div>
 
       <style>{`
-        /* Grid paper — soft graph-paper lines */
-        .grid-paper {
-          background-image:
-            linear-gradient(to right, rgba(26,18,18,0.06) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(26,18,18,0.06) 1px, transparent 1px);
-          background-size: 26px 26px;
+        /* Dotted notebook paper */
+        .dot-paper {
+          background-image: radial-gradient(rgba(26,18,18,0.13) 1px, transparent 1.2px);
+          background-size: 22px 22px;
         }
 
         .prose-notes {
           color: #1A1212;
-          font-family: var(--font-patrick);
           font-size: 19px;
-          line-height: 1.65;
+          line-height: 1.7;
         }
 
-        /* H2 — handwritten print on sage highlighter strip, alternating colors */
+        /* MAGAZINE 2-COLUMN FLOW (desktop) */
+        @media (min-width: 900px) {
+          .prose-notes {
+            column-count: 2;
+            column-gap: 56px;
+            column-rule: 1px dashed rgba(26,18,18,0.12);
+          }
+        }
+
+        /* Full-width breakers — these span both columns */
+        .prose-notes h2,
+        .prose-notes hr,
+        .prose-notes table,
+        .prose-notes blockquote {
+          column-span: all;
+          -webkit-column-span: all;
+        }
+
+        /* Keep sub-blocks intact across column breaks */
+        .prose-notes h3,
+        .prose-notes ul,
+        .prose-notes ol,
+        .prose-notes p {
+          break-inside: avoid;
+          page-break-inside: avoid;
+        }
+
+        /* H2 — handwritten print on rotating colored highlighter strips */
         .prose-notes h2 {
-          font-family: var(--font-patrick);
-          font-size: 1.55rem;
+          font-family: ${handwriting.style.fontFamily};
+          font-size: 32px;
           font-weight: 400;
           letter-spacing: 0.01em;
           color: #1A1212;
           display: inline-block;
-          background: linear-gradient(120deg, #C8DDB5 0%, #C8DDB5 100%);
-          background-size: 100% 75%;
+          background: #C8DDB5;
+          background-size: 100% 72%;
           background-repeat: no-repeat;
-          background-position: 0 70%;
-          padding: 0.1em 0.5em;
-          margin: 2.2rem 0 0.9rem 0;
+          background-position: 0 68%;
+          padding: 0.1em 0.55em;
+          margin: 56px 0 22px 0;
+          border-radius: 3px;
+          transform: rotate(-0.5deg);
+          transform-origin: left center;
         }
         .prose-notes h2:nth-of-type(2n) {
-          background: linear-gradient(120deg, #FCD757 0%, #FCD757 100%);
-          background-size: 100% 75%;
+          background: #FCD757;
+          background-size: 100% 72%;
           background-repeat: no-repeat;
-          background-position: 0 70%;
+          background-position: 0 68%;
+          transform: rotate(0.4deg);
         }
         .prose-notes h2:nth-of-type(3n) {
-          background: linear-gradient(120deg, #F4ACB7 0%, #F4ACB7 100%);
-          background-size: 100% 75%;
+          background: #F4ACB7;
+          background-size: 100% 72%;
           background-repeat: no-repeat;
-          background-position: 0 70%;
+          background-position: 0 68%;
+          transform: rotate(-0.7deg);
         }
         .prose-notes h2:nth-of-type(4n) {
-          background: linear-gradient(120deg, #BCDDF0 0%, #BCDDF0 100%);
-          background-size: 100% 75%;
+          background: #BCDDF0;
+          background-size: 100% 72%;
           background-repeat: no-repeat;
-          background-position: 0 70%;
+          background-position: 0 68%;
+          transform: rotate(0.6deg);
         }
 
-        /* H3 — cursive script with peach highlighter */
+        /* H3 — big cursive script with peach highlighter */
         .prose-notes h3 {
-          font-family: var(--font-caveat);
+          font-family: ${cursive.style.fontFamily};
           font-weight: 700;
-          font-size: 2rem;
+          font-size: 36px;
           letter-spacing: 0;
           color: #1A1212;
           display: inline-block;
-          background: linear-gradient(120deg, rgba(244,172,183,0.6) 0%, rgba(244,172,183,0.6) 100%);
-          background-size: 100% 65%;
+          background: linear-gradient(120deg, rgba(244,172,183,0.55) 0%, rgba(244,172,183,0.55) 100%);
+          background-size: 100% 60%;
           background-repeat: no-repeat;
           background-position: 0 80%;
-          padding: 0 0.3em;
-          margin: 1.5rem 0 0.5rem 0;
-          line-height: 1.05;
+          padding: 0 0.32em;
+          margin: 24px 0 8px 0;
+          line-height: 1.0;
         }
 
-        /* Paragraphs */
+        /* Paragraphs — generous spacing */
         .prose-notes p {
-          margin: 0.5rem 0 0.85rem 0;
-          font-family: var(--font-patrick);
+          margin: 6px 0 14px 0;
           font-size: 19px;
         }
 
-        /* Bold — candy pink marker highlight on key terms */
+        /* Bold — candy pink marker swipe */
         .prose-notes strong {
           color: #1A1212;
           font-weight: 400;
@@ -145,7 +178,7 @@ export function NotesView({ markdown, title, subject }: { markdown: string; titl
           padding: 0 0.15em;
         }
 
-        /* Italic — sky blue underline highlight */
+        /* Italic — sky blue */
         .prose-notes em {
           font-style: normal;
           color: #1A1212;
@@ -156,14 +189,14 @@ export function NotesView({ markdown, title, subject }: { markdown: string; titl
           padding: 0 0.15em;
         }
 
-        /* Inline code — sage green pill, definition style */
+        /* Inline code — sage pill */
         .prose-notes code {
           background: #DCEACE;
           color: #1A1212;
-          padding: 0.1em 0.45em;
-          border-radius: 4px;
-          font-family: var(--font-patrick);
-          font-size: 0.9em;
+          padding: 0.1em 0.5em;
+          border-radius: 5px;
+          font-family: ${handwriting.style.fontFamily};
+          font-size: 0.92em;
           border: 1px solid rgba(26,18,18,0.12);
         }
 
@@ -171,129 +204,123 @@ export function NotesView({ markdown, title, subject }: { markdown: string; titl
         .prose-notes ul {
           list-style: none;
           padding-left: 0;
-          margin: 0.5rem 0 0.85rem 0;
+          margin: 8px 0 18px 0;
         }
         .prose-notes ul li {
           position: relative;
-          padding-left: 1.5rem;
-          margin: 0.35rem 0;
-          font-family: var(--font-patrick);
+          padding-left: 22px;
+          margin: 6px 0;
           font-size: 19px;
         }
         .prose-notes ul li::before {
           content: '';
           position: absolute;
           left: 0;
-          top: 0.7rem;
-          width: 9px;
-          height: 9px;
+          top: 11px;
+          width: 10px;
+          height: 10px;
           border-radius: 50%;
           background: #F4ACB7;
           box-shadow: 1px 1px 0 rgba(0,0,0,0.1);
         }
 
-        /* Numbered lists — yellow circles like the reference */
+        /* Numbered lists — yellow circles */
         .prose-notes ol {
           counter-reset: item;
           list-style: none;
           padding-left: 0;
-          margin: 0.7rem 0;
+          margin: 12px 0 18px 0;
         }
         .prose-notes ol li {
           counter-increment: item;
           position: relative;
-          padding-left: 2.6rem;
-          margin: 0.6rem 0;
-          font-family: var(--font-patrick);
+          padding-left: 44px;
+          margin: 10px 0;
           font-size: 19px;
-          min-height: 2rem;
+          min-height: 36px;
         }
         .prose-notes ol li::before {
           content: counter(item);
           position: absolute;
           left: 0;
-          top: -0.05rem;
-          width: 2rem;
-          height: 2rem;
+          top: -1px;
+          width: 32px;
+          height: 32px;
           background: #FCD757;
           border: 1.5px solid #1A1212;
           border-radius: 50%;
-          font-family: var(--font-patrick);
-          font-size: 1.05rem;
+          font-family: ${handwriting.style.fontFamily};
+          font-size: 17px;
           display: flex;
           align-items: center;
           justify-content: center;
           color: #1A1212;
-          box-shadow: 1px 1.5px 0 rgba(0,0,0,0.12);
+          box-shadow: 1px 2px 0 rgba(0,0,0,0.12);
         }
 
-        /* Blockquote — hand-drawn sticky callout */
+        /* Blockquote — sticky note callout, FULL-WIDTH break */
         .prose-notes blockquote {
           background: #FFE89C;
           border: 2px dashed #1A1212;
-          border-radius: 6px;
-          padding: 0.9rem 1.1rem;
-          margin: 1.3rem 0;
-          font-family: var(--font-patrick);
-          font-size: 18px;
+          border-radius: 10px;
+          padding: 18px 22px;
+          margin: 28px 0;
+          font-family: ${handwriting.style.fontFamily};
+          font-size: 19px;
           color: #1A1212;
           position: relative;
-          transform: rotate(-0.6deg);
-          box-shadow: 2px 3px 0 rgba(0,0,0,0.1);
+          transform: rotate(-0.4deg);
+          box-shadow: 2px 4px 0 rgba(0,0,0,0.1);
         }
         .prose-notes blockquote::before {
           content: '💡';
           position: absolute;
-          top: -0.7rem;
-          left: 0.8rem;
-          font-size: 1.2rem;
+          top: -14px;
+          left: 16px;
+          font-size: 22px;
           background: #FFFBF2;
-          padding: 0 0.3rem;
+          padding: 0 6px;
         }
-        .prose-notes blockquote p {
-          margin: 0;
-        }
+        .prose-notes blockquote p { margin: 0; }
 
-        /* Dashed divider like the reference */
+        /* Dashed divider */
         .prose-notes hr {
           border: 0;
-          border-top: 2px dashed rgba(26,18,18,0.25);
-          margin: 1.6rem 0;
+          border-top: 2px dashed rgba(26,18,18,0.28);
+          margin: 36px 0 28px 0;
         }
 
-        /* Tables — hand-drawn feel */
+        /* Tables — hand-drawn full-width */
         .prose-notes table {
           width: 100%;
           border-collapse: separate;
           border-spacing: 0;
-          margin: 1.2rem 0;
+          margin: 24px 0;
           font-size: 17px;
           border: 2px solid #1A1212;
-          border-radius: 4px;
+          border-radius: 8px;
           overflow: hidden;
-          box-shadow: 2px 3px 0 rgba(0,0,0,0.1);
+          box-shadow: 2px 4px 0 rgba(0,0,0,0.1);
           background: #FFFBF2;
         }
         .prose-notes th {
           background: #C8DDB5;
-          font-family: var(--font-patrick);
-          font-size: 1rem;
+          font-family: ${handwriting.style.fontFamily};
+          font-size: 17px;
           letter-spacing: 0.02em;
-          padding: 0.55rem 0.85rem;
+          padding: 12px 16px;
           text-align: left;
           border-bottom: 2px solid #1A1212;
           color: #1A1212;
         }
         .prose-notes td {
-          padding: 0.5rem 0.85rem;
+          padding: 10px 16px;
           border-bottom: 1px solid rgba(26,18,18,0.12);
-          font-family: var(--font-patrick);
-          font-size: 17px;
+          font-family: ${handwriting.style.fontFamily};
         }
         .prose-notes tr:last-child td { border-bottom: none; }
         .prose-notes tr:nth-child(even) td { background: rgba(247,202,201,0.18); }
 
-        /* Links */
         .prose-notes a {
           color: #1A1212;
           background-image: linear-gradient(transparent 60%, #BCDDF0 60%);

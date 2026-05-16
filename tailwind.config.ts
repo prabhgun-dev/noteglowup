@@ -55,6 +55,7 @@ const config: Config = {
         bungee: ['var(--font-bungee)', 'Impact', 'sans-serif'],
         anton: ['var(--font-anton)', 'Impact', 'sans-serif'],
         elite: ['var(--font-elite)', 'Courier New', 'monospace'],
+        print: ['var(--font-patrick)', 'Comic Sans MS', 'cursive'],
       },
       borderRadius: {
         '4xl': '2rem',

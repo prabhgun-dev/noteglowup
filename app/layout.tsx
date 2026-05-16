@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Fraunces, Inter, Caveat, Bungee, Anton, Special_Elite } from 'next/font/google';
+import { Fraunces, Inter, Caveat, Bungee, Anton, Special_Elite, Patrick_Hand } from 'next/font/google';
 import './globals.css';
 
 const fraunces = Fraunces({
@@ -41,6 +41,13 @@ const specialElite = Special_Elite({
   display: 'swap',
 });
 
+const patrickHand = Patrick_Hand({
+  subsets: ['latin'],
+  weight: '400',
+  variable: '--font-patrick',
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
   title: 'Notesly — ugly notes → aesthetic in 20 seconds',
   description:
@@ -56,7 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${inter.variable} ${caveat.variable} ${bungee.variable} ${anton.variable} ${specialElite.variable}`}
+      className={`${fraunces.variable} ${inter.variable} ${caveat.variable} ${bungee.variable} ${anton.variable} ${specialElite.variable} ${patrickHand.variable}`}
     >
       <body>{children}</body>
     </html>

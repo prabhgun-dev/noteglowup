@@ -71,7 +71,7 @@ export function NotesView({ markdown, title, subject }: { markdown: string; titl
 
         /* H2 — handwritten print on sage highlighter strip, alternating colors */
         .prose-notes h2 {
-          font-family: var(--font-print);
+          font-family: var(--font-patrick);
           font-size: 1.55rem;
           font-weight: 400;
           letter-spacing: 0.01em;
@@ -211,7 +211,7 @@ export function NotesView({ markdown, title, subject }: { markdown: string; titl
           background: #FCD757;
           border: 1.5px solid #1A1212;
           border-radius: 50%;
-          font-family: var(--font-print);
+          font-family: var(--font-patrick);
           font-size: 1.05rem;
           display: flex;
           align-items: center;
@@ -269,7 +269,7 @@ export function NotesView({ markdown, title, subject }: { markdown: string; titl
         }
         .prose-notes th {
           background: #C8DDB5;
-          font-family: var(--font-print);
+          font-family: var(--font-patrick);
           font-size: 1rem;
           letter-spacing: 0.02em;
           padding: 0.55rem 0.85rem;

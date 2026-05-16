@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { FileText, Layers, ArrowLeft } from 'lucide-react';
 import type { ConvertResponse } from '@/lib/types';
 import { NotesView } from './NotesView';
@@ -11,6 +11,15 @@ type Tab = 'notes' | 'cards';
 
 export function ResultView({ result, onReset }: { result: ConvertResponse; onReset: () => void }) {
   const [tab, setTab] = useState<Tab>('notes');
+
+  // Make sure the Notes view is mounted before PDF export grabs it
+  const prepareForPdf = useCallback(async () => {
+    if (tab !== 'notes') {
+      setTab('notes');
+      // wait for re-render + fonts/layout to settle
+      await new Promise((r) => setTimeout(r, 250));
+    }
+  }, [tab]);
 
   return (
     <div className="w-full max-w-4xl mx-auto">
@@ -26,10 +35,10 @@ export function ResultView({ result, onReset }: { result: ConvertResponse; onRes
             {result.flashcards.length} cards
           </TabBtn>
         </div>
-        <ExportMenu result={result} />
+        <ExportMenu result={result} prepareForPdf={prepareForPdf} />
       </div>
 
-      <div className="print-area">
+      <div className="print-area" id="pdf-target">
         {tab === 'notes' ? (
           <NotesView markdown={result.notesMarkdown} title={result.title} subject={result.subject} />
         ) : (

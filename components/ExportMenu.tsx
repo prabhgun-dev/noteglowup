@@ -81,7 +81,9 @@ export function ExportMenu({ result, prepareForPdf }: Props) {
         scale: 2,
         backgroundColor: '#FFFBF2',
         useCORS: true,
+        allowTaint: true,
         logging: false,
+        foreignObjectRendering: true,
         windowWidth: target.scrollWidth,
         windowHeight: target.scrollHeight,
       });

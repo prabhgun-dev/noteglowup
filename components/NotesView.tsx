@@ -1,10 +1,16 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { Patrick_Hand, Caveat } from 'next/font/google';
 import { StarSticker, StarPink, Lightbulb, HeartBubble } from './Stickers';
+
+// Direct font load — guarantees Patrick Hand and Caveat are bundled with this component
+// and applied via className (more reliable than CSS variables for html2canvas snapshots).
+const handwriting = Patrick_Hand({ subsets: ['latin'], weight: '400' });
+const cursive = Caveat({ subsets: ['latin'], weight: ['400', '700'] });
 
 export function NotesView({ markdown, title, subject }: { markdown: string; title: string; subject?: string }) {
   return (
-    <article className="relative bg-cream rounded-2xl border border-ink/10 shadow-paper overflow-hidden">
+    <article className={`relative bg-cream rounded-2xl border border-ink/10 shadow-paper overflow-hidden ${handwriting.className}`}>
       {/* Grid paper background */}
       <div className="absolute inset-0 grid-paper pointer-events-none" />
 
@@ -19,7 +25,7 @@ export function NotesView({ markdown, title, subject }: { markdown: string; titl
         <div className="mb-6">
           <h1 className="inline-block">
             <span
-              className="font-print text-4xl md:text-6xl leading-[1.1] text-ink"
+              className={`${handwriting.className} text-4xl md:text-6xl leading-[1.1] text-ink`}
               style={{
                 background: 'linear-gradient(120deg, rgba(200,221,181,0.85) 0%, rgba(200,221,181,0.85) 100%)',
                 backgroundRepeat: 'no-repeat',
@@ -35,13 +41,14 @@ export function NotesView({ markdown, title, subject }: { markdown: string; titl
 
         {subject && (
           <p
-            className="font-hand text-2xl md:text-3xl italic text-ink-soft mb-8 inline-block"
+            className={`${cursive.className} text-2xl md:text-3xl italic text-ink-soft mb-8 inline-block`}
             style={{
               background: 'linear-gradient(120deg, rgba(252,215,87,0.6) 0%, rgba(252,215,87,0.6) 100%)',
               backgroundRepeat: 'no-repeat',
               backgroundSize: '100% 60%',
               backgroundPosition: '0 75%',
               padding: '0 0.3em',
+              fontWeight: 700,
             }}
           >
             {subject.toLowerCase()}

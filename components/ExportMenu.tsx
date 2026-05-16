@@ -50,18 +50,28 @@ export function ExportMenu({ result, prepareForPdf }: Props) {
     setOpen(false);
     setBusy('pdf');
     try {
-      // Make sure the Notes view is the visible tab (PDF always exports notes)
+      // Switch to notes tab if we're on cards
       if (prepareForPdf) await prepareForPdf();
 
-      // Wait for fonts to be ready so handwriting actually renders into the canvas
-      if (typeof document !== 'undefined' && document.fonts?.ready) {
-        await document.fonts.ready;
+      // Pre-load every font the NotesView uses, then wait a render tick.
+      // html2canvas can't render a font that hasn't been requested + loaded yet.
+      if (typeof document !== 'undefined' && document.fonts) {
+        await Promise.all([
+          document.fonts.load('400 19px "Patrick Hand"'),
+          document.fonts.load('400 32px "Caveat"'),
+          document.fonts.load('700 32px "Caveat"'),
+          document.fonts.load('400 24px "Bungee"'),
+          document.fonts.load('400 24px "Anton"'),
+          document.fonts.load('400 14px "Special Elite"'),
+          document.fonts.ready,
+        ]);
       }
+      // Extra settle time for layout / images
+      await new Promise((r) => setTimeout(r, 400));
 
       const target = document.getElementById('pdf-target');
       if (!target) throw new Error('Notes content not found');
 
-      // Dynamic-import to keep the heavy libs out of the main bundle
       const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
         import('html2canvas'),
         import('jspdf'),
@@ -73,28 +83,40 @@ export function ExportMenu({ result, prepareForPdf }: Props) {
         useCORS: true,
         logging: false,
         windowWidth: target.scrollWidth,
+        windowHeight: target.scrollHeight,
       });
 
-      const imgData = canvas.toDataURL('image/jpeg', 0.92);
       const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+      const pageWidthMm = pdf.internal.pageSize.getWidth(); // 210
+      const pageHeightMm = pdf.internal.pageSize.getHeight(); // 297
 
-      const pageWidth = pdf.internal.pageSize.getWidth(); // 210
-      const pageHeight = pdf.internal.pageSize.getHeight(); // 297
-      const margin = 8;
-      const imgWidth = pageWidth - margin * 2;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      // No PDF margins — the notes card has its own internal padding
+      const pxPerMm = canvas.width / pageWidthMm;
+      const pageHeightPx = Math.floor(pageHeightMm * pxPerMm);
 
-      // Multi-page: same image, shifted up each page
-      let position = margin;
-      let heightLeft = imgHeight;
-      pdf.addImage(imgData, 'JPEG', margin, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight - margin * 2;
+      // Slice the tall canvas into clean page-sized chunks (no overlap)
+      let yOffset = 0;
+      let pageNum = 0;
+      while (yOffset < canvas.height) {
+        const sliceHeightPx = Math.min(pageHeightPx, canvas.height - yOffset);
 
-      while (heightLeft > 0) {
-        pdf.addPage();
-        position -= pageHeight - margin * 2;
-        pdf.addImage(imgData, 'JPEG', margin, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight - margin * 2;
+        const sliceCanvas = document.createElement('canvas');
+        sliceCanvas.width = canvas.width;
+        sliceCanvas.height = sliceHeightPx;
+        const ctx = sliceCanvas.getContext('2d');
+        if (!ctx) throw new Error('Canvas context unavailable');
+        ctx.fillStyle = '#FFFBF2';
+        ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
+        ctx.drawImage(canvas, 0, -yOffset);
+
+        const sliceData = sliceCanvas.toDataURL('image/jpeg', 0.92);
+        const sliceHeightMm = sliceHeightPx / pxPerMm;
+
+        if (pageNum > 0) pdf.addPage();
+        pdf.addImage(sliceData, 'JPEG', 0, 0, pageWidthMm, sliceHeightMm);
+
+        yOffset += pageHeightPx;
+        pageNum++;
       }
 
       pdf.save(`${slug(result.title)}.pdf`);

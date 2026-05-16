@@ -48,6 +48,8 @@ DO NOT
 ✗ Don't skip tables when the original has comparison content.
 ✗ Don't hallucinate facts not on the page.
 ✗ Don't use HTML in the markdown — markdown only.
+✗ NEVER repeat the same list, section, or sentence twice. If you've covered a point, move on.
+✗ Don't restate "Examples:" headers if you already used a bullet list right above. Just use the list.
 
 ═══════════════════════════════════════
 OUTPUT

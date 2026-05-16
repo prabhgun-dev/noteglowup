@@ -87,16 +87,31 @@ export function ExportMenu({ result, prepareForPdf }: Props) {
         import('jspdf'),
       ]);
 
+      // Force a clean single-column layout sized for A4 portrait
+      // A4 portrait at 96dpi ≈ 794px. We use ~840px so column flow disables and content fits naturally.
+      const ORIG_WIDTH = target.style.width;
+      const ORIG_MAX_WIDTH = target.style.maxWidth;
+      target.classList.add('pdf-mode');
+      target.style.width = '840px';
+      target.style.maxWidth = '840px';
+
+      // Wait for the browser to reflow with the new constraints
+      await new Promise((r) => setTimeout(r, 200));
+
       const canvas = await html2canvas(target, {
         scale: 2,
         backgroundColor: '#FFFBF2',
         useCORS: true,
         allowTaint: true,
         logging: false,
-        foreignObjectRendering: true,
-        windowWidth: target.scrollWidth,
+        windowWidth: 840,
         windowHeight: target.scrollHeight,
       });
+
+      // Restore original layout
+      target.classList.remove('pdf-mode');
+      target.style.width = ORIG_WIDTH;
+      target.style.maxWidth = ORIG_MAX_WIDTH;
 
       const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
       const pageWidthMm = pdf.internal.pageSize.getWidth(); // 210

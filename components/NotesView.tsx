@@ -86,6 +86,14 @@ export function NotesView({ markdown, title, subject }: { markdown: string; titl
           }
         }
 
+        /* PDF export: force single-column so it fits portrait A4 cleanly */
+        .pdf-mode .prose-notes,
+        .pdf-mode.prose-notes {
+          column-count: 1 !important;
+          column-gap: 0 !important;
+          column-rule: none !important;
+        }
+
         /* Full-width breakers — these span both columns */
         .prose-notes h2,
         .prose-notes hr,
